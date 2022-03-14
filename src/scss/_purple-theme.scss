@@ -1,0 +1,11 @@
+$dark-purple: #2a2445;
+$light-purple: #8b499c;
+$white: #f3e0e0;
+$purple: (
+  'colors': (
+    'backgroundColor': $dark-purple,
+    'primaryColor': $dark-purple,
+    'secondaryColor': $light-purple,
+    'primaryTextColor': $white,
+  ),
+);
