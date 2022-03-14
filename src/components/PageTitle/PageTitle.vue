@@ -3,9 +3,9 @@ defineProps<{ title: string }>();
 </script>
 
 <template>
-  <section class="page-title">
+  <header class="page-title">
     <h1>{{ title }}</h1>
-  </section>
+  </header>
 </template>
 
 <style scoped lang="scss">
