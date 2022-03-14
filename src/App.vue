@@ -12,6 +12,7 @@ const theme = 'purple';
 <style lang="scss">
 @use './scss/_purple-theme.scss';
 @use './scss/_light-theme.scss';
+@use './scss/_config.scss';
 
 body {
   margin: 0;
@@ -31,8 +32,8 @@ body {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: config.$defaultLayoutPadding;
+  padding-right: config.$defaultLayoutPadding;
 }
 
 .purple {
