@@ -1,4 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
+// eslint-disable-next-line import/no-unresolved
+import { router } from './router';
 
-createApp(App).mount('#app');
+createApp(App).use(router).mount('#app');
