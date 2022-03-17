@@ -6,7 +6,7 @@ defineProps<{
 
 <template>
   <div :class="`overlay-container ${additionnalClasses || ''}`">
-    <p>Sorry, the Dsktop version is not avalaible yet 🤨.</p>
+    <p>Sorry, the Desktop version is not avalaible yet 🤨.</p>
     <p>Keep calm, Im deving (⁉️) it asap 😜</p>
   </div>
 </template>
