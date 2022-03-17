@@ -38,7 +38,8 @@
   },
   "lint-staged": {
     "*.{js,ts}": [
-      "yarn prettier-format & yarn lint -- --quiet --fix"
+      "yarn prettier-format",
+      "yarn lint -- --quiet --fix"
     ]
   },
   "config": {
