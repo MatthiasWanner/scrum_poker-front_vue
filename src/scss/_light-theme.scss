@@ -1,0 +1,11 @@
+$primaryColor: #f6f2ed;
+$secondaryColor: #fbc076;
+$primaryText: #000000;
+$light: (
+  'colors': (
+    'backgroundColor': $primaryColor,
+    'primaryColor': $primaryColor,
+    'secondaryColor': $secondaryColor,
+    'primaryTextColor': $primaryText,
+  ),
+);

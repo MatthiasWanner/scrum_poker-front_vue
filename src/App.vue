@@ -1,21 +1,60 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue';
+import Home from './pages/Home.vue';
+import Overlay from './components/UI/Overlay.vue';
+const theme = 'purple';
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+  <main :class="`app-container ${theme}`">
+    <Home />
+    <Overlay class="app-overlay" />
+  </main>
 </template>
 
-<style>
+<style lang="scss">
+@use './scss/_purple-theme.scss';
+@use './scss/_light-theme.scss';
+@use './scss/_config.scss';
+
+.app-overlay {
+  display: none;
+  font-size: xx-large;
+  padding: 20px;
+}
+
+body {
+  margin: 0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.app-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-left: config.$defaultLayoutPadding;
+  padding-right: config.$defaultLayoutPadding;
+}
+
+.purple {
+  background-color: purple-theme.$dark-purple;
+  color: purple-theme.$white;
+}
+
+@media screen and (min-width: 768px) {
+  .app-overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>
