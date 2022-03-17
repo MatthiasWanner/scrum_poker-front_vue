@@ -28,13 +28,14 @@ const theme = ref<string>(config.defaultTheme);
 @use '../../../scss/light-theme';
 .app-button {
   width: 100%;
-  padding: 10px;
+  padding: 5px;
   box-sizing: border-box;
-  height: 70px;
+  margin-bottom: 30px;
+  height: 50px;
   border: none;
-  border-radius: 100px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: x-large;
+  font-size: larger;
   font-weight: bold;
   &.purple {
     background-color: purple-theme.$light-purple;
