@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Home from './pages/Home.vue';
+import Overlay from './components/UI/Overlay.vue';
 const theme = 'purple';
 </script>
 
 <template>
   <main :class="`app-container ${theme}`">
     <Home />
+    <Overlay class="app-overlay" />
   </main>
 </template>
 
@@ -13,6 +15,12 @@ const theme = 'purple';
 @use './scss/_purple-theme.scss';
 @use './scss/_light-theme.scss';
 @use './scss/_config.scss';
+
+.app-overlay {
+  display: none;
+  font-size: xx-large;
+  padding: 20px;
+}
 
 body {
   margin: 0;
@@ -39,5 +47,14 @@ body {
 .purple {
   background-color: purple-theme.$dark-purple;
   color: purple-theme.$white;
+}
+
+@media screen and (min-width: 768px) {
+  .app-overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>
