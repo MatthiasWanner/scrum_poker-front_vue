@@ -4,3 +4,5 @@ import App from './App.vue';
 import { router } from './router';
 
 createApp(App).use(router).mount('#app');
+
+// FIXME: eslint import/no-resolved
