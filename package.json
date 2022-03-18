@@ -11,7 +11,8 @@
     "postinstall": "husky install"
   },
   "dependencies": {
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.14.0",
@@ -36,8 +37,9 @@
     "vue-tsc": "^0.29.8"
   },
   "lint-staged": {
-    "*.{js,ts}": [
-      "yarn prettier-format & yarn lint -- --quiet --fix"
+    "*.{js,ts,vue}": [
+      "yarn prettier-format",
+      "yarn lint -- --quiet --fix"
     ]
   },
   "config": {
