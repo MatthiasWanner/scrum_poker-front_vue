@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import Home from './pages/Home.vue';
 import Overlay from './components/UI/Overlay.vue';
 const theme = 'purple';
 </script>
 
 <template>
   <main :class="`app-container ${theme}`">
-    <Home />
+    <router-view />
     <Overlay class="app-overlay" />
   </main>
 </template>

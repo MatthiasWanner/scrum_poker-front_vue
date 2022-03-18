@@ -13,6 +13,6 @@ defineProps<{ title: string }>();
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
-  font-size: x-large;
+  font-size: large;
 }
 </style>
