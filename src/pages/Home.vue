@@ -4,14 +4,11 @@ import Button from '../components/UI/Button/Button.vue';
 import { ref } from 'vue';
 import Image from '../components/Image/Image.vue';
 import logo from '../../public/logo_rectangle.svg';
-
-const handleCreateParty = (state: boolean) => {
-  console.log('Create party');
-  isHidden.value = !state;
-};
+// FIXME: eslint import/no-unresolved
+// eslint-disable-next-line import/no-unresolved
+import { router } from '../router';
 
 const handleJoinParty = (state: boolean) => {
-  console.log('Join party');
   isHidden.value = !state;
 };
 
@@ -25,7 +22,7 @@ const isHidden = ref<boolean>(true);
       <h3 class="home-title">What do you want to do ?</h3>
       <Button
         :text="homeContent.createParty"
-        :handle-click="() => handleCreateParty(isHidden)"
+        :handle-click="() => router.push('/create')"
       />
       <Button
         :text="homeContent.joinParty"
