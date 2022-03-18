@@ -5,7 +5,7 @@ import config from '../../../content/config.json';
 interface IProps {
   text: string;
   type?: 'button' | 'submit' | 'reset';
-  handleClick: () => void;
+  handleClick?: () => void;
 }
 defineProps<IProps>();
 
