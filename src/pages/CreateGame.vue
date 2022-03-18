@@ -1,12 +1,29 @@
 <script setup lang="ts">
 import PageTitle from '../components/PageTitle/PageTitle.vue';
+import TextInput from '../components/Forms/TextInput/TextInput.vue';
+import createGameContent from '../content/create_game.json';
+import Button from '../components/UI/Button/Button.vue';
+
+const submitForm = () => {
+  console.log('Submitting form');
+};
 </script>
 
 <template>
   <div class="page-container">
-    <PageTitle title="Create a new game" />
+    <PageTitle :title="createGameContent.title" />
     <section class="page-main-section">
-      <p>Awaiting Components</p>
+      <form @submit.prevent="submitForm">
+        <TextInput
+          field-name="gameName"
+          :label="createGameContent.gameNameInputLabel"
+        />
+        <TextInput
+          field-name="username"
+          :label="createGameContent.usernameInputLabel"
+        />
+        <Button :text="createGameContent.createGameButtonLabel" type="submit" />
+      </form>
     </section>
   </div>
 </template>
