@@ -49,17 +49,5 @@ const submitForm = ({ gameName, username }: IFormData) => {
 </template>
 
 <style scoped lang="scss">
-.page-container {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.page-main-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  position: relative;
-}
+@use '../scss/layout';
 </style>
