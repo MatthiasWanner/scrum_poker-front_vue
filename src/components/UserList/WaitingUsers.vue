@@ -1,27 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import config from '../../content/config.json';
 import gameBoardContent from '../../content/game_board.json';
 import Button from '../UI/Button/Button.vue';
 
-const users = ref<string[]>([
-  'user1',
-  'user2',
-  'user3',
-  'user4',
-  'user5',
-  'user6',
-  'user7',
-  'user8',
-  'user9',
-  'user10',
-]);
+// eslint-disable-next-line import/no-unresolved
+import { users } from '../../constants';
 </script>
 <template>
   <div :class="`${config.defaultTheme} wait-users-list`">
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
-      <li v-for="user in users" :key="user" class="user-item">{{ user }}</li>
+      <li v-for="user in users" :key="user.id" class="user-item">
+        {{ user.username }}
+      </li>
     </ul>
     <Button class="start-button" :text="gameBoardContent.start" />
     <router-link to="/" class="cancel-link">{{
