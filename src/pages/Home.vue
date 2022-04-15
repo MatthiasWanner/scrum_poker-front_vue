@@ -11,7 +11,7 @@ import { router } from '../router';
 <template>
   <Image :src="logo" :width="300" />
   <section class="page-main-section">
-    <h3 class="home-title">What do you want to do ?</h3>
+    <h3 class="home-title">{{ homeContent.title }}</h3>
     <Button
       :text="homeContent.createParty"
       :handle-click="() => router.push('/create')"
