@@ -2,25 +2,29 @@
 import PageTitle from '../components/PageTitle/PageTitle.vue';
 import gameBoardContent from '../content/game_board.json';
 import Button from '../components/UI/Button/Button.vue';
-import { ref } from 'vue';
 import Image from '../components/Image/Image.vue';
 import downDuo from '../../public/down_duo.svg';
 import copyLogo from '../../public/copy_logo.svg';
 import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
 
-const gameId = ref('727643f9-5000-488a-8cff-c357e8bb08f9');
+// eslint-disable-next-line import/no-unresolved
+import store from '../store';
 </script>
 <template>
   <section class="gameboard-container">
-    <PageTitle title="Sprint #4" />
+    <PageTitle :title="store.gameName" />
+
     <p class="game-board-text">
       #1 {{ gameBoardContent.clictoCopy }}
       <Image class="down-arrow-duo" :src="downDuo" />
     </p>
-    <Button :text="gameId" :secondary="true">
+
+    <Button :text="store.gameId" :secondary="true">
       <Image :src="copyLogo" />
     </Button>
+
     <p class="game-board-text">#2 {{ gameBoardContent.sendId }}</p>
+
     <WaitingUsersList />
   </section>
 </template>
