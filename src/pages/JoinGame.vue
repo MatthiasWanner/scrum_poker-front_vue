@@ -25,29 +25,25 @@ const submitForm = ({ gameId, username }: IFormData) => {
 </script>
 
 <template>
-  <div class="page-container">
-    <PageTitle :title="joinGameContent.title" />
-    <section class="page-main-section">
-      <form @submit.prevent="handleSubmit(submitForm)">
-        <TextInput
-          :register="register"
-          field-name="gameId"
-          :label="joinGameContent.gameIdInputLabel"
-        />
-        <TextInput
-          :register="register"
-          field-name="username"
-          :label="joinGameContent.usernameInputLabel"
-        />
-        <Button :text="joinGameContent.joinGameButtonLabel" type="submit" />
-      </form>
-    </section>
-    <section class="page-main-section">
-      <p>{{ message }}</p>
-    </section>
-  </div>
+  <PageTitle :title="joinGameContent.title" />
+  <section class="page-main-section">
+    <form @submit.prevent="handleSubmit(submitForm)">
+      <TextInput
+        :register="register"
+        field-name="gameId"
+        :label="joinGameContent.gameIdInputLabel"
+      />
+      <TextInput
+        :register="register"
+        field-name="username"
+        :label="joinGameContent.usernameInputLabel"
+      />
+      <Button :text="joinGameContent.joinGameButtonLabel" type="submit" />
+    </form>
+  </section>
+  <section class="page-main-section">
+    <p>{{ message }}</p>
+  </section>
 </template>
 
-<style scoped lang="scss">
-@use '../scss/layout';
-</style>
+<style scoped lang="scss"></style>

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import Overlay from './components/UI/Overlay.vue';
+import PageContainer from './components/UI/Container/PageContainer.vue';
 const theme = 'purple';
 </script>
 
 <template>
   <main :class="`app-container ${theme}`">
-    <router-view />
+    <PageContainer>
+      <router-view />
+    </PageContainer>
     <Overlay class="app-overlay" />
   </main>
 </template>

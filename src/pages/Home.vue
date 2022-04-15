@@ -9,25 +9,21 @@ import { router } from '../router';
 </script>
 
 <template>
-  <div class="page-container">
-    <Image :src="logo" :width="300" />
-    <section class="page-main-section">
-      <h3 class="home-title">What do you want to do ?</h3>
-      <Button
-        :text="homeContent.createParty"
-        :handle-click="() => router.push('/create')"
-      />
-      <Button
-        :text="homeContent.joinParty"
-        :handle-click="() => router.push('/join')"
-      />
-    </section>
-  </div>
+  <Image :src="logo" :width="300" />
+  <section class="page-main-section">
+    <h3 class="home-title">What do you want to do ?</h3>
+    <Button
+      :text="homeContent.createParty"
+      :handle-click="() => router.push('/create')"
+    />
+    <Button
+      :text="homeContent.joinParty"
+      :handle-click="() => router.push('/join')"
+    />
+  </section>
 </template>
 
 <style scoped lang="scss">
-@use '../scss/layout';
-
 .home-title {
   font-size: x-large;
   font-weight: bold;
