@@ -21,7 +21,7 @@ const users = ref<string[]>([
   <div :class="`${config.defaultTheme} wait-users-list`">
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
-      <li class="user-item" v-for="user in users" :key="user">{{ user }}</li>
+      <li v-for="user in users" :key="user" class="user-item">{{ user }}</li>
     </ul>
     <Button class="start-button" :text="gameBoardContent.start" />
     <router-link to="/" class="cancel-link">{{
