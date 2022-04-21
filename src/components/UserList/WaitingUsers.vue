@@ -1,23 +1,43 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import config from '../../content/config.json';
 import gameBoardContent from '../../content/game_board.json';
 import Button from '../UI/Button/Button.vue';
 
 // eslint-disable-next-line import/no-unresolved
 import { users } from '../../constants';
+// eslint-disable-next-line import/no-unresolved
+import store from '../../store';
+
+onMounted(() => {
+  const initialPlayers = store.gamePlayers;
+  store.gamePlayers = [...initialPlayers, ...users];
+});
+
+const handleClick = () => {
+  store.gameStatus = 'IN_PROGRESS';
+};
 </script>
+
 <template>
   <div :class="`${config.defaultTheme} wait-users-list`">
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
-      <li v-for="user in users" :key="user.id" class="user-item">
-        {{ user.username }}
+      <li v-for="user in store.gamePlayers" :key="user.id" class="user-item">
+        {{ store.user?.id === user.id ? '🤓 You' : user.username }}
       </li>
     </ul>
-    <Button class="start-button" :text="gameBoardContent.start" />
-    <router-link to="/" class="cancel-link">{{
-      gameBoardContent.cancel
-    }}</router-link>
+    <footer class="wait-users-list-footer">
+      <Button
+        v-if="store.user?.role === 'SCRUMMASTER'"
+        class="start-button"
+        :text="gameBoardContent.start"
+        @click="handleClick"
+      />
+      <router-link to="/" class="cancel-link">
+        {{ gameBoardContent.cancel }}
+      </router-link>
+    </footer>
   </div>
 </template>
 
@@ -55,8 +75,11 @@ import { users } from '../../constants';
   font-size: larger;
 }
 
-.start-button {
+.wait-users-list-footer {
   margin-top: auto;
+}
+
+.start-button {
   margin-bottom: 10px;
 }
 

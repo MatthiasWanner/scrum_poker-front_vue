@@ -9,21 +9,31 @@ import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
 
 // eslint-disable-next-line import/no-unresolved
 import store from '../store';
+import { onUnmounted } from 'vue';
+
+onUnmounted(() => {
+  store.gamePlayers = [];
+});
 </script>
 <template>
   <section class="gameboard-container">
     <PageTitle :title="store.gameName" />
 
-    <p class="game-board-text">
-      #1 {{ gameBoardContent.clictoCopy }}
-      <Image class="down-arrow-duo" :src="downDuo" />
-    </p>
+    <header
+      v-if="store.user?.role === 'SCRUMMASTER'"
+      class="scrum-master-header"
+    >
+      <p class="game-board-text">
+        #1 {{ gameBoardContent.clictoCopy }}
+        <Image class="down-arrow-duo" :src="downDuo" />
+      </p>
 
-    <Button :text="store.gameId" :secondary="true">
-      <Image :src="copyLogo" />
-    </Button>
+      <Button :text="store.gameId" :secondary="true">
+        <Image :src="copyLogo" />
+      </Button>
 
-    <p class="game-board-text">#2 {{ gameBoardContent.sendId }}</p>
+      <p class="game-board-text">#2 {{ gameBoardContent.sendId }}</p>
+    </header>
 
     <WaitingUsersList />
   </section>
@@ -33,9 +43,14 @@ import store from '../store';
 .gameboard-container {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   align-items: center;
   height: 100%;
+}
+
+.scrum-master-header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 .game-board-text {
   width: 100%;
