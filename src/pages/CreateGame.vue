@@ -26,7 +26,7 @@ const submitForm = ({ gameName, username }: IFormData) => {
     // return (message.value = `${username} want to create "${gameName}" Game. It will be possible when I have dev it 😂`);
     const user: IUser = {
       id: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
-      username,
+      username: `🤓 ${username}`,
       role: 'SCRUMMASTER',
     };
     store.gameName = gameName;
