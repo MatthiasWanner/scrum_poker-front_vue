@@ -4,11 +4,14 @@ defineProps<{ title: string }>();
 
 <template>
   <header class="page-title">
-    <h1>{{ title }}</h1>
+    <router-link to="/">
+      <h1>{{ title }}</h1>
+    </router-link>
   </header>
 </template>
 
 <style scoped lang="scss">
+@use '../../scss/global';
 .page-title {
   width: 100%;
   padding: 10px;
