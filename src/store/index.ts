@@ -1,9 +1,10 @@
-import { reactive } from 'vue';
+import { defineStore } from 'pinia';
 
 export interface IUser {
   id: string;
   username: string;
   role: 'SCRUMMASTER' | 'DEVELOPER';
+  vote: number | null;
 }
 
 export interface IAppStore {
@@ -25,20 +26,42 @@ export const initialGame: IAppStore['game'] = {
   gamePlayers: [],
 };
 
-const store = reactive<IAppStore>({ game: initialGame, user: null });
+const store = defineStore('appStore', {
+  state: (): IAppStore => ({
+    game: initialGame,
+    user: null,
+  }),
+  getters: {
+    isVoteSecret: (state): boolean =>
+      state.game.gamePlayers.every((player) => !player.vote),
+  },
+});
 
 export const useAppStore = () => {
-  const { game, user } = store;
+  const appStore = store();
 
-  const setUser = (user: IUser | null) => (store.user = user);
-  const setGame = (game: IAppStore['game']) => (store.game = game);
+  const { game, user, isVoteSecret } = appStore;
+
+  const setUser = (user: IUser | null) => (appStore.user = user);
+  const setGame = (game: IAppStore['game']) => (appStore.game = game);
   const addPlayers = (players: IUser[]) =>
-    (store.game.gamePlayers = [...store.game.gamePlayers, ...players]);
+    (appStore.game.gamePlayers = [...appStore.game.gamePlayers, ...players]);
   const setGameStatus = (status: GameStatus) =>
-    (store.game.gameStatus = status);
-  const resetGame = () => (store.game = initialGame);
+    (appStore.game.gameStatus = status);
+  const resetGame = () => (appStore.game = initialGame);
+  const resetStore = () => appStore.$reset();
 
-  return { game, user, setGame, setUser, addPlayers, setGameStatus, resetGame };
+  return {
+    game,
+    user,
+    isVoteSecret,
+    setGame,
+    setUser,
+    addPlayers,
+    setGameStatus,
+    resetGame,
+    resetStore,
+  };
 };
 
 export default store;
