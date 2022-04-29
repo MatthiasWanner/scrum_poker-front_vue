@@ -29,6 +29,7 @@ const submitForm = ({ gameName, username }: IFormData) => {
       id: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
       username: `🤓 ${username}`,
       role: 'SCRUMMASTER',
+      vote: null,
     };
     const newStoreGame: IAppStore['game'] = {
       gameId: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
