@@ -12,11 +12,10 @@ import { router } from '../router';
 // eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../store';
 
-const { setUser, user } = useAppStore();
+const { setUser } = useAppStore();
 
 onMounted(() => {
   setUser(null);
-  console.log('user', user);
 });
 </script>
 
