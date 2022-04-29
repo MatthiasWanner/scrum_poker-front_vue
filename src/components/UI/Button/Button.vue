@@ -4,6 +4,7 @@ import config from '../../../content/config.json';
 
 interface IProps {
   text: string;
+  secondary?: boolean;
   type?: 'button' | 'submit' | 'reset';
   handleClick?: () => void;
 }
@@ -14,12 +15,14 @@ const theme = ref<string>(config.defaultTheme);
 
 <template>
   <button
-    :class="`${theme} app-button`"
+    :class="`${theme} ${secondary ? 'secondary' : 'primary'} app-button`"
     :type="type"
-    class="page-title"
     @click="handleClick"
   >
-    {{ text }}
+    <span class="button-label">
+      {{ text }}
+    </span>
+    <slot />
   </button>
 </template>
 
@@ -27,6 +30,9 @@ const theme = ref<string>(config.defaultTheme);
 @use '../../../scss/purple-theme';
 @use '../../../scss/light-theme';
 .app-button {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   width: 100%;
   padding: 5px;
   box-sizing: border-box;
@@ -38,8 +44,20 @@ const theme = ref<string>(config.defaultTheme);
   font-size: larger;
   font-weight: bold;
   &.purple {
-    background-color: purple-theme.$light-purple;
     color: purple-theme.$white;
+    &.primary {
+      background-color: purple-theme.$light-purple;
+    }
+    &.secondary {
+      background-color: purple-theme.$pastel-purple;
+    }
+  }
+
+  .button-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>

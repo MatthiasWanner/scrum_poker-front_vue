@@ -1,7 +1,5 @@
 <script setup lang="ts">
-// FIXME: eslint import/no-resolved
-// eslint-disable-next-line import/no-unresolved
-import { RegisterInput } from '@composables/useForm';
+import type { RegisterInput } from '@composables/useForm';
 
 interface IProps {
   label: string;
