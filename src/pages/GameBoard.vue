@@ -11,10 +11,10 @@ import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
 // eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../store';
 
-const { resetGame, game, user } = useAppStore();
+const { resetStore, game, user } = useAppStore();
 
 onUnmounted(() => {
-  resetGame();
+  resetStore();
 });
 </script>
 
