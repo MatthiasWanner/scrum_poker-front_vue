@@ -24,8 +24,8 @@ const handleClick = () => {
   <div :class="`${config.defaultTheme} wait-users-list`">
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
-      <li v-for="user in game.gamePlayers" :key="user.id" class="user-item">
-        {{ userConnected?.id === user.id ? '🤓 You' : user.username }}
+      <li v-for="user in game.users" :key="user.userId" class="user-item">
+        {{ userConnected?.userId === user.userId ? '🤓 You' : user.username }}
       </li>
     </ul>
     <footer class="wait-users-list-footer">
