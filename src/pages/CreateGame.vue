@@ -8,7 +8,7 @@ import TextInput from '../components/Forms/TextInput/TextInput.vue';
 import Button from '../components/UI/Button/Button.vue';
 
 // eslint-disable-next-line import/no-unresolved
-import store, { IUser } from '../store';
+import { useAppStore, IUser, IAppStore } from '../store';
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
 
@@ -20,6 +20,7 @@ interface IFormData {
 const message = ref<string>('');
 
 const { handleSubmit, register } = useForm();
+const { setGame, setUser } = useAppStore();
 
 const submitForm = ({ gameName, username }: IFormData) => {
   if (gameName && username) {
@@ -29,11 +30,15 @@ const submitForm = ({ gameName, username }: IFormData) => {
       username: `🤓 ${username}`,
       role: 'SCRUMMASTER',
     };
-    store.gameName = gameName;
-    store.gameStatus = 'WAITING';
-    store.gamePlayers.push(user);
-    store.user = user;
-    router.push('/gameboard');
+    const newStoreGame: IAppStore['game'] = {
+      gameId: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
+      gameName,
+      gamePlayers: [user],
+      gameStatus: 'WAITING',
+    };
+    setGame(newStoreGame);
+    setUser(user);
+    return router.push('/gameboard');
   }
   return (message.value = `Please complete all fields 🤦‍♂️`);
 };

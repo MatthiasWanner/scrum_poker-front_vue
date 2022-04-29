@@ -7,6 +7,11 @@ import PageTitle from '../components/PageTitle/PageTitle.vue';
 import TextInput from '../components/Forms/TextInput/TextInput.vue';
 import Button from '../components/UI/Button/Button.vue';
 
+// eslint-disable-next-line import/no-unresolved
+import { IAppStore, IUser, useAppStore } from '../store';
+// eslint-disable-next-line import/no-unresolved
+import { router } from '../router';
+
 interface IFormData {
   gameId: string;
   username: string;
@@ -15,10 +20,24 @@ interface IFormData {
 const message = ref<string>('');
 
 const { handleSubmit, register } = useForm();
+const { setGame, setUser } = useAppStore();
 
 const submitForm = ({ gameId, username }: IFormData) => {
   if (gameId && username) {
-    return (message.value = `${username} want to join a game with the id "${gameId}". It will be possible when I have dev it 😂`);
+    const user: IUser = {
+      id: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
+      username: `🤓 ${username}`,
+      role: 'DEVELOPER',
+    };
+    const newStoreGame: IAppStore['game'] = {
+      gameId: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
+      gameName: 'Game Name',
+      gamePlayers: [user],
+      gameStatus: 'WAITING',
+    };
+    setGame(newStoreGame);
+    setUser(user);
+    return router.push('/gameboard');
   }
   return (message.value = `Please complete all fields 🤦‍♂️`);
 };

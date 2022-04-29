@@ -1,11 +1,23 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import homeContent from '../content/home.json';
 import Button from '../components/UI/Button/Button.vue';
 import Image from '../components/Image/Image.vue';
 import logo from '../../public/logo_rectangle.svg';
+
 // FIXME: eslint import/no-unresolved
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
+
+// eslint-disable-next-line import/no-unresolved
+import { useAppStore } from '../store';
+
+const { setUser, user } = useAppStore();
+
+onMounted(() => {
+  setUser(null);
+  console.log('user', user);
+});
 </script>
 
 <template>

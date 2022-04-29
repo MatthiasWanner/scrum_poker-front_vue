@@ -7,15 +7,16 @@ import Button from '../UI/Button/Button.vue';
 // eslint-disable-next-line import/no-unresolved
 import { users } from '../../constants';
 // eslint-disable-next-line import/no-unresolved
-import store from '../../store';
+import { useAppStore } from '../../store';
+
+const { addPlayers, setGameStatus, game, user: userConnected } = useAppStore();
 
 onMounted(() => {
-  const initialPlayers = store.gamePlayers;
-  store.gamePlayers = [...initialPlayers, ...users];
+  addPlayers(users);
 });
 
 const handleClick = () => {
-  store.gameStatus = 'IN_PROGRESS';
+  setGameStatus('IN_PROGRESS');
 };
 </script>
 
@@ -23,13 +24,13 @@ const handleClick = () => {
   <div :class="`${config.defaultTheme} wait-users-list`">
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
-      <li v-for="user in store.gamePlayers" :key="user.id" class="user-item">
-        {{ store.user?.id === user.id ? '🤓 You' : user.username }}
+      <li v-for="user in game.gamePlayers" :key="user.id" class="user-item">
+        {{ userConnected?.id === user.id ? '🤓 You' : user.username }}
       </li>
     </ul>
     <footer class="wait-users-list-footer">
       <Button
-        v-if="store.user?.role === 'SCRUMMASTER'"
+        v-if="userConnected?.role === 'SCRUMMASTER'"
         class="start-button"
         :text="gameBoardContent.start"
         @click="handleClick"

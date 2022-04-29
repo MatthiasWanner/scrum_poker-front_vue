@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onUnmounted } from 'vue';
 import PageTitle from '../components/PageTitle/PageTitle.vue';
 import gameBoardContent from '../content/game_board.json';
 import Button from '../components/UI/Button/Button.vue';
@@ -8,27 +9,26 @@ import copyLogo from '../../public/copy_logo.svg';
 import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
 
 // eslint-disable-next-line import/no-unresolved
-import store from '../store';
-import { onUnmounted } from 'vue';
+import { useAppStore } from '../store';
+
+const { resetGame, game, user } = useAppStore();
 
 onUnmounted(() => {
-  store.gamePlayers = [];
+  resetGame();
 });
 </script>
+
 <template>
   <section class="gameboard-container">
-    <PageTitle :title="store.gameName" />
+    <PageTitle :title="game.gameName" />
 
-    <header
-      v-if="store.user?.role === 'SCRUMMASTER'"
-      class="scrum-master-header"
-    >
+    <header v-if="user?.role === 'SCRUMMASTER'" class="scrum-master-header">
       <p class="game-board-text">
         #1 {{ gameBoardContent.clictoCopy }}
         <Image class="down-arrow-duo" :src="downDuo" />
       </p>
 
-      <Button :text="store.gameId" :secondary="true">
+      <Button :text="game.gameId" :secondary="true">
         <Image :src="copyLogo" />
       </Button>
 

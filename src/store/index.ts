@@ -7,19 +7,38 @@ export interface IUser {
 }
 
 export interface IAppStore {
-  gameName: string;
-  gameId: string;
-  gameStatus: string;
-  gamePlayers: IUser[];
+  game: {
+    gameName: string;
+    gameId: string;
+    gameStatus: GameStatus;
+    gamePlayers: IUser[];
+  };
   user: IUser | null;
 }
 
-const store = reactive<IAppStore>({
+export type GameStatus = 'WAITING' | 'IN_PROGRESS' | 'FINISHED';
+
+export const initialGame: IAppStore['game'] = {
   gameName: '',
-  gameId: '065998eb-1824-4f3c-99ec-21fb7d05622e',
-  gameStatus: '',
+  gameId: '',
+  gameStatus: 'FINISHED',
   gamePlayers: [],
-  user: null,
-});
+};
+
+const store = reactive<IAppStore>({ game: initialGame, user: null });
+
+export const useAppStore = () => {
+  const { game, user } = store;
+
+  const setUser = (user: IUser | null) => (store.user = user);
+  const setGame = (game: IAppStore['game']) => (store.game = game);
+  const addPlayers = (players: IUser[]) =>
+    (store.game.gamePlayers = [...store.game.gamePlayers, ...players]);
+  const setGameStatus = (status: GameStatus) =>
+    (store.game.gameStatus = status);
+  const resetGame = () => (store.game = initialGame);
+
+  return { game, user, setGame, setUser, addPlayers, setGameStatus, resetGame };
+};
 
 export default store;
