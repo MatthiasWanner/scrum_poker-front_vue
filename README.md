@@ -6,6 +6,20 @@ This template should help get you started developing with Vue 3 and Typescript i
 
 - [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
 
+## Environment variables
+
+Run this following command in your terminal since the project folder and customize the values if necessary
+
+```bash
+cp .env.example .env
+```
+
+or paste this content in a `.env` file located at the root of the project
+
+```bash
+VITE_SCRUM_API_URL=http://localhost:9000/graphql
+```
+
 ## Type Support For `.vue` Imports in TS
 
 Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
