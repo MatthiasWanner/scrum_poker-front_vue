@@ -46,7 +46,7 @@ const submitForm = async ({ gameName, username }: IFormData) => {
 
 onDone(({ data }) => {
   const { game } = data.createGame;
-  console.log(game);
+
   const connectedUser: IUser =
     game.users.find((user: IUser) => user.username === storeUser?.username) ||
     null;
