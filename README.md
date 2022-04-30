@@ -18,6 +18,7 @@ or paste this content in a `.env` file located at the root of the project
 
 ```bash
 VITE_SCRUM_API_URL=http://localhost:9000/graphql
+VITE_SCRUM_WS_URL=ws://localhost:9000/graphql
 ```
 
 ## Type Support For `.vue` Imports in TS
