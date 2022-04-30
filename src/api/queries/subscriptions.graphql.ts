@@ -2,7 +2,7 @@ import { gql } from 'graphql-tag';
 
 export const subscribeGame = gql`
   subscription subscribeGame($gameId: String!) {
-    subscribeGame(gameId: $gameId) {
+    playingGame(gameId: $gameId) {
       gameId
       gameName
       status
