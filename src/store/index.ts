@@ -44,8 +44,14 @@ export const useAppStore = () => {
 
   const setUser = (user: IUser | null) => (appStore.user = user);
   const setGame = (game: IAppStore['game']) => (appStore.game = game);
-  const addPlayers = (players: IUser[]) =>
-    (appStore.game.users = [...appStore.game.users, ...players]);
+  const addPlayers = (players: IUser[]) => {
+    const initialPlayers = appStore.game.users;
+    const nonExistentPlayers = players.filter(
+      (player) =>
+        initialPlayers.findIndex((u) => u.userId === player.userId) === -1,
+    );
+    appStore.game.users = [...initialPlayers, ...nonExistentPlayers];
+  };
   const setGameStatus = (status: GameStatus) => (appStore.game.status = status);
   const resetGame = () => (appStore.game = initialGame);
   const resetStore = () => appStore.$reset();
