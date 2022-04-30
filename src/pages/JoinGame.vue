@@ -53,6 +53,7 @@ onDone(({ data }) => {
 
   setUser(connectedUser);
   setGame({ ...rest, users: [] });
+
   return router.push('/gameboard');
 });
 </script>

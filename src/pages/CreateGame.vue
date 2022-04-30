@@ -45,13 +45,16 @@ const submitForm = async ({ gameName, username }: IFormData) => {
 };
 
 onDone(({ data }) => {
-  const { game } = data.createGame;
+  const {
+    game: { users, ...rest },
+  } = data.createGame;
 
   const connectedUser: IUser =
-    game.users.find((user: IUser) => user.username === storeUser?.username) ||
-    null;
+    users.find((user: IUser) => user.username === storeUser?.username) || null;
+
   setUser(connectedUser);
-  setGame(game);
+  setGame({ ...rest, users: [] });
+
   return router.push('/gameboard');
 });
 </script>
