@@ -1,17 +1,29 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { useQuery, useSubscription } from '@vue/apollo-composable';
 import config from '../../content/config.json';
 import gameBoardContent from '../../content/game_board.json';
 import Button from '../UI/Button/Button.vue';
 
 // eslint-disable-next-line import/no-unresolved
-import { users } from '../../constants';
-// eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../../store';
+// eslint-disable-next-line import/no-unresolved
+import { getOneGame, subscribeGame } from '../../api/queries';
+import { watch } from 'vue';
 
-const { addPlayers, setGameStatus, game, user: userConnected } = useAppStore();
+const { setGameStatus, addPlayers, game, user: userConnected } = useAppStore();
+const { onResult } = useQuery(getOneGame, { id: game.gameId });
+const { result: gameSubscription } = useSubscription(subscribeGame, {
+  gameId: game.gameId,
+});
 
-onMounted(() => {
+watch(gameSubscription, ({ playingGame }) => {
+  const { users } = playingGame;
+  addPlayers(users);
+});
+
+onResult(({ data }) => {
+  const { users, status } = data.getOneGame;
+  setGameStatus(status);
   addPlayers(users);
 });
 
@@ -24,8 +36,8 @@ const handleClick = () => {
   <div :class="`${config.defaultTheme} wait-users-list`">
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
-      <li v-for="user in game.gamePlayers" :key="user.id" class="user-item">
-        {{ userConnected?.id === user.id ? '🤓 You' : user.username }}
+      <li v-for="user in game.users" :key="user.userId" class="user-item">
+        {{ userConnected?.userId === user.userId ? '🤓 You' : user.username }}
       </li>
     </ul>
     <footer class="wait-users-list-footer">

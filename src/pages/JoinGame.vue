@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useMutation } from '@vue/apollo-composable';
+
 import joinGameContent from '../content/join_game.json';
 // eslint-disable-next-line import/no-unresolved
 import useForm from '../composables/useForm';
@@ -8,9 +10,11 @@ import TextInput from '../components/Forms/TextInput/TextInput.vue';
 import Button from '../components/UI/Button/Button.vue';
 
 // eslint-disable-next-line import/no-unresolved
-import { IAppStore, IUser, useAppStore } from '../store';
+import { IUser, useAppStore } from '../store';
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
+// eslint-disable-next-line import/no-unresolved
+import { joinGame } from '../api/queries/mutations.graphql';
 
 interface IFormData {
   gameId: string;
@@ -20,28 +24,38 @@ interface IFormData {
 const message = ref<string>('');
 
 const { handleSubmit, register } = useForm();
-const { setGame, setUser } = useAppStore();
+const { setGame, setUser, user: storeUser } = useAppStore();
+const { mutate, onDone } = useMutation(joinGame);
 
-const submitForm = ({ gameId, username }: IFormData) => {
+const submitForm = async ({ gameId, username }: IFormData) => {
   if (gameId && username) {
-    const user: IUser = {
-      id: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
-      username: `🤓 ${username}`,
-      role: 'DEVELOPER',
-      vote: null,
-    };
-    const newStoreGame: IAppStore['game'] = {
-      gameId: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
-      gameName: 'Game Name',
-      gamePlayers: [user],
-      gameStatus: 'WAITING',
-    };
-    setGame(newStoreGame);
-    setUser(user);
-    return router.push('/gameboard');
+    try {
+      await mutate({ input: { username, gameId } });
+      setUser({
+        userId: '',
+        username,
+        role: 'DEVELOPER',
+        vote: null,
+      });
+    } catch (e) {
+      message.value = (e as Error).message;
+    }
   }
   return (message.value = `Please complete all fields 🤦‍♂️`);
 };
+
+onDone(({ data }) => {
+  const {
+    game: { users, ...rest },
+  } = data.joinGame;
+  const connectedUser: IUser =
+    users.find((user: IUser) => user.username === storeUser?.username) || null;
+
+  setUser(connectedUser);
+  setGame({ ...rest, users: [] });
+
+  return router.push('/gameboard');
+});
 </script>
 
 <template>

@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useMutation } from '@vue/apollo-composable';
+
 import createGameContent from '../content/create_game.json';
-// eslint-disable-next-line import/no-unresolved
-import useForm from '../composables/useForm';
 import PageTitle from '../components/PageTitle/PageTitle.vue';
 import TextInput from '../components/Forms/TextInput/TextInput.vue';
 import Button from '../components/UI/Button/Button.vue';
 
 // eslint-disable-next-line import/no-unresolved
-import { useAppStore, IUser, IAppStore } from '../store';
+import useForm from '../composables/useForm';
+// eslint-disable-next-line import/no-unresolved
+import { useAppStore, IUser } from '../store';
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
+// eslint-disable-next-line import/no-unresolved
+import { createGame } from '../api/queries/mutations.graphql';
 
 interface IFormData {
   gameName: string;
@@ -20,29 +24,39 @@ interface IFormData {
 const message = ref<string>('');
 
 const { handleSubmit, register } = useForm();
-const { setGame, setUser } = useAppStore();
+const { setGame, setUser, user: storeUser } = useAppStore();
+const { mutate, onDone } = useMutation(createGame);
 
-const submitForm = ({ gameName, username }: IFormData) => {
+const submitForm = async ({ gameName, username }: IFormData) => {
   if (gameName && username) {
-    // return (message.value = `${username} want to create "${gameName}" Game. It will be possible when I have dev it 😂`);
-    const user: IUser = {
-      id: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
-      username: `🤓 ${username}`,
-      role: 'SCRUMMASTER',
-      vote: null,
-    };
-    const newStoreGame: IAppStore['game'] = {
-      gameId: 'fd49f00e-2836-4453-a8bf-0f0ac2237ce4',
-      gameName,
-      gamePlayers: [user],
-      gameStatus: 'WAITING',
-    };
-    setGame(newStoreGame);
-    setUser(user);
-    return router.push('/gameboard');
+    try {
+      await mutate({ input: { username, gameName } });
+      setUser({
+        userId: '',
+        username,
+        role: 'SCRUMMASTER',
+        vote: null,
+      });
+    } catch (e) {
+      message.value = (e as Error).message;
+    }
   }
   return (message.value = `Please complete all fields 🤦‍♂️`);
 };
+
+onDone(({ data }) => {
+  const {
+    game: { users, ...rest },
+  } = data.createGame;
+
+  const connectedUser: IUser =
+    users.find((user: IUser) => user.username === storeUser?.username) || null;
+
+  setUser(connectedUser);
+  setGame({ ...rest, users: [] });
+
+  return router.push('/gameboard');
+});
 </script>
 
 <template>
