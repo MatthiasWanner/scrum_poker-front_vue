@@ -17,7 +17,7 @@ export const getOneGame = gql`
   }
 `;
 
-export const getVotes = gql`
+export const getGameVotes = gql`
   query getGameVotes($id: String!) {
     getGameVotes(id: $id) {
       gameId
