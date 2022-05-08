@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMutation } from '@vue/apollo-composable';
 
 import joinGameContent from '../content/join_game.json';
 // eslint-disable-next-line import/no-unresolved
@@ -10,11 +9,12 @@ import TextInput from '../components/Forms/TextInput/TextInput.vue';
 import Button from '../components/UI/Button/Button.vue';
 
 // eslint-disable-next-line import/no-unresolved
-import { IUser, useAppStore } from '../store';
+import { useAppStore } from '../store';
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
+
 // eslint-disable-next-line import/no-unresolved
-import { joinGame } from '../api/queries/mutations.graphql';
+import { useJoinGameMutation } from '../api/generated';
 
 interface IFormData {
   gameId: string;
@@ -24,19 +24,13 @@ interface IFormData {
 const message = ref<string>('');
 
 const { handleSubmit, register } = useForm();
-const { setGame, setUser, user: storeUser } = useAppStore();
-const { mutate, onDone } = useMutation(joinGame);
+const { setGame, setUser } = useAppStore();
+const { mutate, onDone } = useJoinGameMutation({});
 
 const submitForm = async ({ gameId, username }: IFormData) => {
   if (gameId && username) {
     try {
-      await mutate({ input: { username, gameId } });
-      setUser({
-        userId: '',
-        username,
-        role: 'DEVELOPER',
-        vote: null,
-      });
+      await mutate({ gameId, input: { username } });
     } catch (e) {
       message.value = (e as Error).message;
     }
@@ -45,16 +39,19 @@ const submitForm = async ({ gameId, username }: IFormData) => {
 };
 
 onDone(({ data }) => {
-  const {
-    game: { users, ...rest },
-  } = data.joinGame;
-  const connectedUser: IUser =
-    users.find((user: IUser) => user.username === storeUser?.username) || null;
+  if (data) {
+    const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      user: { __typename: unusedUserDatas, ...userDatas },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      game: { __typename: unusedGamaDatas, ...gameDatas }, // extract __typename to convert rest into storeGame type
+    } = data.joinGame;
 
-  setUser(connectedUser);
-  setGame({ ...rest, users: [] });
+    setUser(userDatas);
+    setGame(gameDatas);
 
-  return router.push('/gameboard');
+    return router.push('/gameboard');
+  }
 });
 </script>
 

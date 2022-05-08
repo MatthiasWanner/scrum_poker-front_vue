@@ -1,3 +1,6 @@
+import type { CurrentGame, User, UserInGame } from '@src/api/generated';
+// eslint-disable-next-line import/no-unresolved
+import { Status } from '../api/generated';
 import { defineStore } from 'pinia';
 
 export interface IUser {
@@ -8,21 +11,14 @@ export interface IUser {
 }
 
 export interface IAppStore {
-  game: {
-    gameName: string;
-    gameId: string;
-    status: GameStatus;
-    users: IUser[];
-  };
-  user: IUser | null;
+  game: Pick<CurrentGame, 'gameId' | 'gameName' | 'status' | 'users'>;
+  user: User | null;
 }
-
-export type GameStatus = 'WAITING' | 'IN_PROGRESS' | 'FINISHED';
 
 export const initialGame: IAppStore['game'] = {
   gameName: '',
   gameId: '',
-  status: 'FINISHED',
+  status: Status.Finished,
   users: [],
 };
 
@@ -42,9 +38,9 @@ export const useAppStore = () => {
 
   const { game, user, isVoteSecret } = appStore;
 
-  const setUser = (user: IUser | null) => (appStore.user = user);
+  const setUser = (user: User | null) => (appStore.user = user);
   const setGame = (game: IAppStore['game']) => (appStore.game = game);
-  const addPlayers = (players: IUser[]) => {
+  const addPlayers = (players: UserInGame[]) => {
     const initialPlayers = appStore.game.users;
     const nonExistentPlayers = players.filter(
       (player) =>
@@ -52,7 +48,7 @@ export const useAppStore = () => {
     );
     appStore.game.users = [...initialPlayers, ...nonExistentPlayers];
   };
-  const setGameStatus = (status: GameStatus) => (appStore.game.status = status);
+  const setGameStatus = (status: Status) => (appStore.game.status = status);
   const resetGame = () => (appStore.game = initialGame);
   const resetStore = () => appStore.$reset();
 
