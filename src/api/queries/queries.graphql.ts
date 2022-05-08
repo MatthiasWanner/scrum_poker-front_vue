@@ -1,8 +1,8 @@
 import { gql } from 'graphql-tag';
 
 export const getOneGame = gql`
-  query getOneGame($id: String!) {
-    getOneGame(id: $id) {
+  query getOneGame($gameId: ID!) {
+    getOneGame(gameId: $gameId) {
       gameId
       gameName
       status
@@ -17,9 +17,9 @@ export const getOneGame = gql`
   }
 `;
 
-export const getVotes = gql`
-  query getGameVotes($id: String!) {
-    getGameVotes(id: $id) {
+export const revealVotes = gql`
+  query revealVotes($gameId: ID!) {
+    getGameVotes(gameId: $gameId) {
       gameId
       gameName
       status

@@ -9,7 +9,7 @@ import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 
 // eslint-disable-next-line import/no-unresolved
-import typeDefs from './schema.graphql';
+import typeDefs from './typeDefs';
 
 // HTTP connection to the API
 const httpLink = createHttpLink({

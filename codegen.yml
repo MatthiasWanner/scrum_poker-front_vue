@@ -1,0 +1,12 @@
+overwrite: true
+schema: 'http://localhost:9000/graphql'
+documents: 'src/api/queries/*.ts'
+generates:
+  src/api/generated/index.ts:
+    config:
+      vueCompositionApiImportFrom: vue
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'fragment-matcher'
+      - 'typescript-vue-apollo'
