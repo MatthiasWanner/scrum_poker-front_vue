@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMutation } from '@vue/apollo-composable';
 
 import createGameContent from '../content/create_game.json';
 import PageTitle from '../components/PageTitle/PageTitle.vue';
@@ -10,11 +9,11 @@ import Button from '../components/UI/Button/Button.vue';
 // eslint-disable-next-line import/no-unresolved
 import useForm from '../composables/useForm';
 // eslint-disable-next-line import/no-unresolved
-import { useAppStore, IUser } from '../store';
+import { useAppStore } from '../store';
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
 // eslint-disable-next-line import/no-unresolved
-import { createGame } from '../api/queries/mutations.graphql';
+import { useCreateGameMutation } from '../api/generated';
 
 interface IFormData {
   gameName: string;
@@ -24,19 +23,13 @@ interface IFormData {
 const message = ref<string>('');
 
 const { handleSubmit, register } = useForm();
-const { setGame, setUser, user: storeUser } = useAppStore();
-const { mutate, onDone } = useMutation(createGame);
+const { setGame, setUser } = useAppStore();
+const { mutate, onDone } = useCreateGameMutation({});
 
 const submitForm = async ({ gameName, username }: IFormData) => {
   if (gameName && username) {
     try {
       await mutate({ input: { username, gameName } });
-      setUser({
-        userId: '',
-        username,
-        role: 'SCRUMMASTER',
-        vote: null,
-      });
     } catch (e) {
       message.value = (e as Error).message;
     }
@@ -45,17 +38,20 @@ const submitForm = async ({ gameName, username }: IFormData) => {
 };
 
 onDone(({ data }) => {
-  const {
-    game: { users, ...rest },
-  } = data.createGame;
+  if (data) {
+    const {
+      // Disable rules to get Data only
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      game: { __typename: unusedGameDatas, ...gameDatas },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      user: { __typename: unusedUserDatas, ...userDatas },
+    } = data.createGame;
 
-  const connectedUser: IUser =
-    users.find((user: IUser) => user.username === storeUser?.username) || null;
+    setUser(userDatas);
+    setGame({ ...gameDatas, users: [] });
 
-  setUser(connectedUser);
-  setGame({ ...rest, users: [] });
-
-  return router.push('/gameboard');
+    return router.push('/gameboard');
+  }
 });
 </script>
 
