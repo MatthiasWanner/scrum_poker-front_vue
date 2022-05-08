@@ -1,28 +1,13 @@
 import { gql } from 'graphql-tag';
 
-export const createGame = gql`
-  mutation createGame($input: CreateGameInput!) {
-    createGame(input: $input) {
-      game {
-        gameId
-        gameName
-        status
-        users {
-          userId
-          username
-          role
-          vote
-          hasVoted
-        }
-      }
-      redisResponse
-    }
-  }
-`;
-
 export const joinGame = gql`
-  mutation joinGame($input: JoinGameInput!) {
-    joinGame(input: $input) {
+  mutation joinGame($gameId: ID!, $input: JoinGameInput!) {
+    joinGame(gameId: $gameId, input: $input) {
+      user {
+        userId
+        username
+        role
+      }
       game {
         gameId
         gameName
@@ -35,14 +20,13 @@ export const joinGame = gql`
           hasVoted
         }
       }
-      redisResponse
     }
   }
 `;
 
-export const playerVote = gql`
-  mutation playerVote($input: PlayerVoteInput!) {
-    playerVote(input: $input) {
+export const sendVote = gql`
+  mutation sendVote($gameId: ID!, $input: PlayerVoteInput!) {
+    playerVote(gameId: $gameId, input: $input) {
       gameId
       gameName
       status
@@ -71,6 +55,14 @@ export const me = gql`
 export const logout = gql`
   mutation logout {
     logout {
+      message
+    }
+  }
+`;
+
+export const quitGame = gql`
+  mutation quitGame($gameId: ID!) {
+    quitGame(gameId: $gameId) {
       message
     }
   }

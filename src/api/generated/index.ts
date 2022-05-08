@@ -1,11 +1,6 @@
 import { gql } from 'graphql-tag';
 import * as VueApolloComposable from '@vue/apollo-composable';
-// eslint-disable-next-line import/named
-import { Ref } from 'vue';
-
-// eslint-disable-next-line import/no-unresolved
-import { GameStatus } from '../../store';
-
+import * as VueCompositionApi from 'vue';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -30,20 +25,67 @@ export type Scalars = {
 export type CreateGameInput = {
   /** Name of the new game */
   gameName: Scalars['String'];
+  /** Max players allowed */
+  maxPlayers?: InputMaybe<Scalars['Int']>;
   /** Name of the player */
   username: Scalars['String'];
 };
 
 export type CurrentGame = {
   __typename?: 'CurrentGame';
+  /** Array of deleted users IDs */
+  deletedUsers: Array<Scalars['ID']>;
   /** Id of existing game */
-  gameId: Scalars['String'];
+  gameId: Scalars['ID'];
   /** Name of the new game */
   gameName: Scalars['String'];
+  /** Number of max players allowed */
+  maxPlayers?: Maybe<Scalars['Int']>;
   /** Game status 'WAITING', 'IN_PROGRESS' or 'FINISHED'  */
-  status: Scalars['String'];
+  status: Status;
   /** Users in the game */
   users: Array<UserInGame>;
+};
+
+export type DeleteUsersEvent = {
+  __typename?: 'DeleteUsersEvent';
+  eventType: GameEvents;
+  /** List of deleted user ids */
+  payload: Array<Scalars['ID']>;
+};
+
+export type GameChangeNameEvent = {
+  __typename?: 'GameChangeNameEvent';
+  eventType: GameEvents;
+  payload: Scalars['String'];
+};
+
+export type GameEventResponse =
+  | DeleteUsersEvent
+  | GameChangeNameEvent
+  | GameResetEvent
+  | GameRevealVoteEvent
+  | GameStatusEvent
+  | GameVoteEvent
+  | JoinGameEvent
+  | LeftGameEvent;
+
+/** Game events */
+export enum GameEvents {
+  Gamenamechanged = 'GAMENAMECHANGED',
+  Resetvotes = 'RESETVOTES',
+  Revealvotes = 'REVEALVOTES',
+  Statuschanged = 'STATUSCHANGED',
+  Userjoingame = 'USERJOINGAME',
+  Userleftgame = 'USERLEFTGAME',
+  Usersdeleted = 'USERSDELETED',
+  Uservote = 'USERVOTE',
+}
+
+export type GameResetEvent = {
+  __typename?: 'GameResetEvent';
+  eventType: GameEvents;
+  payload?: Maybe<Scalars['String']>;
 };
 
 export type GameResponse = {
@@ -52,13 +94,50 @@ export type GameResponse = {
   game: CurrentGame;
   /** Redis response status */
   redisResponse: Scalars['String'];
+  /** New user subscribing */
+  user: User;
+};
+
+export type GameRevealVoteEvent = {
+  __typename?: 'GameRevealVoteEvent';
+  eventType: GameEvents;
+  payload: Array<UserVotePayload>;
+};
+
+export type GameStatusEvent = {
+  __typename?: 'GameStatusEvent';
+  eventType: GameEvents;
+  /** Game status: WAITING, IN_PROGRESS, FINISHED */
+  payload: Status;
+};
+
+export type GameSubscriptionEvent = {
+  __typename?: 'GameSubscriptionEvent';
+  eventType: GameEvents;
+};
+
+export type GameVoteEvent = {
+  __typename?: 'GameVoteEvent';
+  eventType: GameEvents;
+  /** Id of the player who just voted */
+  payload: Scalars['ID'];
+};
+
+export type JoinGameEvent = {
+  __typename?: 'JoinGameEvent';
+  eventType: GameEvents;
+  payload: User;
 };
 
 export type JoinGameInput = {
-  /** Name of the new game */
-  gameId: Scalars['String'];
   /** Name of the player */
   username: Scalars['String'];
+};
+
+export type LeftGameEvent = {
+  __typename?: 'LeftGameEvent';
+  eventType: GameEvents;
+  payload: Scalars['ID'];
 };
 
 export type Message = {
@@ -74,6 +153,8 @@ export type Mutation = {
   logout: Message;
   me: UserInSession;
   playerVote: CurrentGame;
+  quitGame: Message;
+  updateGame: CurrentGame;
 };
 
 export type MutationCreateGameArgs = {
@@ -81,16 +162,27 @@ export type MutationCreateGameArgs = {
 };
 
 export type MutationJoinGameArgs = {
+  gameId: Scalars['ID'];
   input: JoinGameInput;
 };
 
 export type MutationPlayerVoteArgs = {
+  gameId: Scalars['ID'];
   input: PlayerVoteInput;
+};
+
+export type MutationQuitGameArgs = {
+  gameId: Scalars['ID'];
+};
+
+export type MutationUpdateGameArgs = {
+  gameId: Scalars['ID'];
+  input: UpdateGameInput;
 };
 
 export type PlayerVoteInput = {
   /** Player vote */
-  vote: Scalars['Int'];
+  vote: Vote;
 };
 
 export type Query = {
@@ -101,20 +193,48 @@ export type Query = {
 };
 
 export type QueryGetGameVotesArgs = {
-  id: Scalars['String'];
+  gameId: Scalars['ID'];
 };
 
 export type QueryGetOneGameArgs = {
-  id: Scalars['String'];
+  gameId: Scalars['ID'];
 };
+
+/** Game status */
+export enum Status {
+  Finished = 'FINISHED',
+  InProgress = 'IN_PROGRESS',
+  Waiting = 'WAITING',
+}
 
 export type Subscription = {
   __typename?: 'Subscription';
-  playingGame: CurrentGame;
+  playingGame: Array<GameEventResponse>;
 };
 
 export type SubscriptionPlayingGameArgs = {
   gameId: Scalars['String'];
+};
+
+export type UpdateGameInput = {
+  /** Array of user IDs to be deleted */
+  deleteUsers?: InputMaybe<Array<Scalars['ID']>>;
+  /** New name of the game */
+  gameName?: InputMaybe<Scalars['String']>;
+  /** Use this field to reset all players votes */
+  resetVotes?: InputMaybe<Scalars['Boolean']>;
+  /** New status of the game */
+  status?: InputMaybe<Status>;
+};
+
+export type User = {
+  __typename?: 'User';
+  /** Role of the player during current game */
+  role: UserRole;
+  /** Id of existing user */
+  userId: Scalars['ID'];
+  /** Name of the player */
+  username: Scalars['String'];
 };
 
 export type UserInGame = {
@@ -122,9 +242,9 @@ export type UserInGame = {
   /** Describe if the user had voted */
   hasVoted: Scalars['Boolean'];
   /** Role of the player during current game */
-  role: Scalars['String'];
+  role: UserRole;
   /** Id of existing user */
-  userId: Scalars['String'];
+  userId: Scalars['ID'];
   /** Name of the player */
   username: Scalars['String'];
   /** Current vote */
@@ -134,42 +254,39 @@ export type UserInGame = {
 export type UserInSession = {
   __typename?: 'UserInSession';
   /** The current session game id */
-  gameId: Scalars['String'];
+  gameId: Scalars['ID'];
   /** Role of the player during current game */
-  role: Scalars['String'];
+  role: UserRole;
   /** Id of existing user */
-  userId: Scalars['String'];
+  userId: Scalars['ID'];
   /** Name of the player */
   username: Scalars['String'];
 };
 
-export type CreateGameMutationVariables = Exact<{
-  input: CreateGameInput;
-}>;
+export enum UserRole {
+  Developer = 'DEVELOPER',
+  Scrummaster = 'SCRUMMASTER',
+}
 
-export type CreateGameMutation = {
-  __typename?: 'Mutation';
-  createGame: {
-    __typename?: 'GameResponse';
-    redisResponse: string;
-    game: {
-      __typename?: 'CurrentGame';
-      gameId: string;
-      gameName: string;
-      status: GameStatus;
-      users: Array<{
-        __typename?: 'UserInGame';
-        userId: string;
-        username: string;
-        role: string;
-        vote?: number | null;
-        hasVoted: boolean;
-      }>;
-    };
-  };
+export type UserVotePayload = {
+  __typename?: 'UserVotePayload';
+  userId: Scalars['ID'];
+  vote: Scalars['Int'];
 };
 
+/** Player vote according to a fibonacci sequence */
+export enum Vote {
+  Eight = 'EIGHT',
+  Five = 'FIVE',
+  One = 'ONE',
+  Thirteen = 'THIRTEEN',
+  Three = 'THREE',
+  Twentyone = 'TWENTYONE',
+  Two = 'TWO',
+}
+
 export type JoinGameMutationVariables = Exact<{
+  gameId: Scalars['ID'];
   input: JoinGameInput;
 }>;
 
@@ -177,17 +294,22 @@ export type JoinGameMutation = {
   __typename?: 'Mutation';
   joinGame: {
     __typename?: 'GameResponse';
-    redisResponse: string;
+    user: {
+      __typename?: 'User';
+      userId: string;
+      username: string;
+      role: UserRole;
+    };
     game: {
       __typename?: 'CurrentGame';
       gameId: string;
       gameName: string;
-      status: GameStatus;
+      status: Status;
       users: Array<{
         __typename?: 'UserInGame';
         userId: string;
         username: string;
-        role: string;
+        role: UserRole;
         vote?: number | null;
         hasVoted: boolean;
       }>;
@@ -195,22 +317,23 @@ export type JoinGameMutation = {
   };
 };
 
-export type PlayerVoteMutationVariables = Exact<{
+export type SendVoteMutationVariables = Exact<{
+  gameId: Scalars['ID'];
   input: PlayerVoteInput;
 }>;
 
-export type PlayerVoteMutation = {
+export type SendVoteMutation = {
   __typename?: 'Mutation';
   playerVote: {
     __typename?: 'CurrentGame';
     gameId: string;
     gameName: string;
-    status: GameStatus;
+    status: Status;
     users: Array<{
       __typename?: 'UserInGame';
       userId: string;
       username: string;
-      role: string;
+      role: UserRole;
       vote?: number | null;
       hasVoted: boolean;
     }>;
@@ -225,7 +348,7 @@ export type MeMutation = {
     __typename?: 'UserInSession';
     userId: string;
     username: string;
-    role: string;
+    role: UserRole;
     gameId: string;
   };
 };
@@ -237,8 +360,17 @@ export type LogoutMutation = {
   logout: { __typename?: 'Message'; message: string };
 };
 
+export type QuitGameMutationVariables = Exact<{
+  gameId: Scalars['ID'];
+}>;
+
+export type QuitGameMutation = {
+  __typename?: 'Mutation';
+  quitGame: { __typename?: 'Message'; message: string };
+};
+
 export type GetOneGameQueryVariables = Exact<{
-  id: Scalars['String'];
+  gameId: Scalars['ID'];
 }>;
 
 export type GetOneGameQuery = {
@@ -247,38 +379,115 @@ export type GetOneGameQuery = {
     __typename?: 'CurrentGame';
     gameId: string;
     gameName: string;
-    status: GameStatus;
+    status: Status;
     users: Array<{
       __typename?: 'UserInGame';
       userId: string;
       username: string;
-      role: string;
+      role: UserRole;
       vote?: number | null;
       hasVoted: boolean;
     }>;
   } | null;
 };
 
-export type GetGameVotesQueryVariables = Exact<{
-  id: Scalars['String'];
+export type RevealVotesQueryVariables = Exact<{
+  gameId: Scalars['ID'];
 }>;
 
-export type GetGameVotesQuery = {
+export type RevealVotesQuery = {
   __typename?: 'Query';
   getGameVotes?: {
     __typename?: 'CurrentGame';
     gameId: string;
     gameName: string;
-    status: GameStatus;
+    status: Status;
     users: Array<{
       __typename?: 'UserInGame';
       userId: string;
       username: string;
-      role: string;
+      role: UserRole;
       vote?: number | null;
       hasVoted: boolean;
     }>;
   } | null;
+};
+
+export type CreateGameMutationVariables = Exact<{
+  input: CreateGameInput;
+}>;
+
+export type CreateGameMutation = {
+  __typename?: 'Mutation';
+  createGame: {
+    __typename?: 'GameResponse';
+    user: {
+      __typename?: 'User';
+      userId: string;
+      username: string;
+      role: UserRole;
+    };
+    game: {
+      __typename?: 'CurrentGame';
+      gameId: string;
+      gameName: string;
+      status: Status;
+      maxPlayers?: number | null;
+    };
+  };
+};
+
+export type ChangeGameStatusMutationVariables = Exact<{
+  gameId: Scalars['ID'];
+  input: UpdateGameInput;
+}>;
+
+export type ChangeGameStatusMutation = {
+  __typename?: 'Mutation';
+  changeGameStatus: {
+    __typename?: 'CurrentGame';
+    gameId: string;
+    gameName: string;
+    status: Status;
+  };
+};
+
+export type DeleteUsersMutationVariables = Exact<{
+  gameId: Scalars['ID'];
+  input: UpdateGameInput;
+}>;
+
+export type DeleteUsersMutation = {
+  __typename?: 'Mutation';
+  deleteUsers: {
+    __typename?: 'CurrentGame';
+    gameId: string;
+    gameName: string;
+    status: Status;
+    deletedUsers: Array<string>;
+  };
+};
+
+export type ResetUsersVotesMutationVariables = Exact<{
+  gameId: Scalars['ID'];
+  input: UpdateGameInput;
+}>;
+
+export type ResetUsersVotesMutation = {
+  __typename?: 'Mutation';
+  resetUsersVotes: {
+    __typename?: 'CurrentGame';
+    gameId: string;
+    gameName: string;
+    status: Status;
+    users: Array<{
+      __typename?: 'UserInGame';
+      userId: string;
+      username: string;
+      vote?: number | null;
+      hasVoted: boolean;
+    }>;
+  };
 };
 
 export type SubscribeGameSubscriptionVariables = Exact<{
@@ -287,20 +496,57 @@ export type SubscribeGameSubscriptionVariables = Exact<{
 
 export type SubscribeGameSubscription = {
   __typename?: 'Subscription';
-  playingGame: {
-    __typename?: 'CurrentGame';
-    gameId: string;
-    gameName: string;
-    status: GameStatus;
-    users: Array<{
-      __typename?: 'UserInGame';
-      userId: string;
-      username: string;
-      role: string;
-      vote?: number | null;
-      hasVoted: boolean;
-    }>;
-  };
+  playingGame: Array<
+    | {
+        __typename?: 'DeleteUsersEvent';
+        eventType: GameEvents;
+        deleteUsersPayload: Array<string>;
+      }
+    | {
+        __typename?: 'GameChangeNameEvent';
+        eventType: GameEvents;
+        changeNamePayload: string;
+      }
+    | {
+        __typename?: 'GameResetEvent';
+        eventType: GameEvents;
+        payload?: string | null;
+      }
+    | {
+        __typename?: 'GameRevealVoteEvent';
+        eventType: GameEvents;
+        revealVotesPayload: Array<{
+          __typename?: 'UserVotePayload';
+          userId: string;
+          vote: number;
+        }>;
+      }
+    | {
+        __typename?: 'GameStatusEvent';
+        eventType: GameEvents;
+        statusEventPayload: Status;
+      }
+    | {
+        __typename?: 'GameVoteEvent';
+        eventType: GameEvents;
+        voteEventPayload: string;
+      }
+    | {
+        __typename?: 'JoinGameEvent';
+        eventType: GameEvents;
+        joinEventPayload: {
+          __typename?: 'User';
+          userId: string;
+          username: string;
+          role: UserRole;
+        };
+      }
+    | {
+        __typename?: 'LeftGameEvent';
+        eventType: GameEvents;
+        leftGamePayload: string;
+      }
+  >;
 };
 
 export interface PossibleTypesResultData {
@@ -309,73 +555,29 @@ export interface PossibleTypesResultData {
   };
 }
 const result: PossibleTypesResultData = {
-  possibleTypes: {},
+  possibleTypes: {
+    GameEventResponse: [
+      'DeleteUsersEvent',
+      'GameChangeNameEvent',
+      'GameResetEvent',
+      'GameRevealVoteEvent',
+      'GameStatusEvent',
+      'GameVoteEvent',
+      'JoinGameEvent',
+      'LeftGameEvent',
+    ],
+  },
 };
 export default result;
 
-export const CreateGameDocument = gql`
-  mutation createGame($input: CreateGameInput!) {
-    createGame(input: $input) {
-      game {
-        gameId
-        gameName
-        status
-        users {
-          userId
-          username
-          role
-          vote
-          hasVoted
-        }
-      }
-      redisResponse
-    }
-  }
-`;
-
-/**
- * __useCreateGameMutation__
- *
- * To run a mutation, you first call `useCreateGameMutation` within a Vue component and pass it any options that fit your needs.
- * When your component renders, `useCreateGameMutation` returns an object that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
- *
- * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
- *
- * @example
- * const { mutate, loading, error, onDone } = useCreateGameMutation({
- *   variables: {
- *     input: // value for 'input'
- *   },
- * });
- */
-export function useCreateGameMutation(
-  options?:
-    | VueApolloComposable.UseMutationOptions<
-        CreateGameMutation,
-        CreateGameMutationVariables
-      >
-    | ReactiveFunction<
-        VueApolloComposable.UseMutationOptions<
-          CreateGameMutation,
-          CreateGameMutationVariables
-        >
-      >,
-) {
-  return VueApolloComposable.useMutation<
-    CreateGameMutation,
-    CreateGameMutationVariables
-  >(CreateGameDocument, options);
-}
-export type CreateGameMutationCompositionFunctionResult =
-  VueApolloComposable.UseMutationReturn<
-    CreateGameMutation,
-    CreateGameMutationVariables
-  >;
 export const JoinGameDocument = gql`
-  mutation joinGame($input: JoinGameInput!) {
-    joinGame(input: $input) {
+  mutation joinGame($gameId: ID!, $input: JoinGameInput!) {
+    joinGame(gameId: $gameId, input: $input) {
+      user {
+        userId
+        username
+        role
+      }
       game {
         gameId
         gameName
@@ -388,7 +590,6 @@ export const JoinGameDocument = gql`
           hasVoted
         }
       }
-      redisResponse
     }
   }
 `;
@@ -406,12 +607,13 @@ export const JoinGameDocument = gql`
  * @example
  * const { mutate, loading, error, onDone } = useJoinGameMutation({
  *   variables: {
+ *     gameId: // value for 'gameId'
  *     input: // value for 'input'
  *   },
  * });
  */
 export function useJoinGameMutation(
-  options?:
+  options:
     | VueApolloComposable.UseMutationOptions<
         JoinGameMutation,
         JoinGameMutationVariables
@@ -433,9 +635,9 @@ export type JoinGameMutationCompositionFunctionResult =
     JoinGameMutation,
     JoinGameMutationVariables
   >;
-export const PlayerVoteDocument = gql`
-  mutation playerVote($input: PlayerVoteInput!) {
-    playerVote(input: $input) {
+export const SendVoteDocument = gql`
+  mutation sendVote($gameId: ID!, $input: PlayerVoteInput!) {
+    playerVote(gameId: $gameId, input: $input) {
       gameId
       gameName
       status
@@ -451,44 +653,45 @@ export const PlayerVoteDocument = gql`
 `;
 
 /**
- * __usePlayerVoteMutation__
+ * __useSendVoteMutation__
  *
- * To run a mutation, you first call `usePlayerVoteMutation` within a Vue component and pass it any options that fit your needs.
- * When your component renders, `usePlayerVoteMutation` returns an object that includes:
+ * To run a mutation, you first call `useSendVoteMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useSendVoteMutation` returns an object that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
  *
  * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
  *
  * @example
- * const { mutate, loading, error, onDone } = usePlayerVoteMutation({
+ * const { mutate, loading, error, onDone } = useSendVoteMutation({
  *   variables: {
+ *     gameId: // value for 'gameId'
  *     input: // value for 'input'
  *   },
  * });
  */
-export function usePlayerVoteMutation(
+export function useSendVoteMutation(
   options:
     | VueApolloComposable.UseMutationOptions<
-        PlayerVoteMutation,
-        PlayerVoteMutationVariables
+        SendVoteMutation,
+        SendVoteMutationVariables
       >
     | ReactiveFunction<
         VueApolloComposable.UseMutationOptions<
-          PlayerVoteMutation,
-          PlayerVoteMutationVariables
+          SendVoteMutation,
+          SendVoteMutationVariables
         >
       >,
 ) {
   return VueApolloComposable.useMutation<
-    PlayerVoteMutation,
-    PlayerVoteMutationVariables
-  >(PlayerVoteDocument, options);
+    SendVoteMutation,
+    SendVoteMutationVariables
+  >(SendVoteDocument, options);
 }
-export type PlayerVoteMutationCompositionFunctionResult =
+export type SendVoteMutationCompositionFunctionResult =
   VueApolloComposable.UseMutationReturn<
-    PlayerVoteMutation,
-    PlayerVoteMutationVariables
+    SendVoteMutation,
+    SendVoteMutationVariables
   >;
 export const MeDocument = gql`
   mutation me {
@@ -572,9 +775,57 @@ export type LogoutMutationCompositionFunctionResult =
     LogoutMutation,
     LogoutMutationVariables
   >;
+export const QuitGameDocument = gql`
+  mutation quitGame($gameId: ID!) {
+    quitGame(gameId: $gameId) {
+      message
+    }
+  }
+`;
+
+/**
+ * __useQuitGameMutation__
+ *
+ * To run a mutation, you first call `useQuitGameMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useQuitGameMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useQuitGameMutation({
+ *   variables: {
+ *     gameId: // value for 'gameId'
+ *   },
+ * });
+ */
+export function useQuitGameMutation(
+  options:
+    | VueApolloComposable.UseMutationOptions<
+        QuitGameMutation,
+        QuitGameMutationVariables
+      >
+    | ReactiveFunction<
+        VueApolloComposable.UseMutationOptions<
+          QuitGameMutation,
+          QuitGameMutationVariables
+        >
+      >,
+) {
+  return VueApolloComposable.useMutation<
+    QuitGameMutation,
+    QuitGameMutationVariables
+  >(QuitGameDocument, options);
+}
+export type QuitGameMutationCompositionFunctionResult =
+  VueApolloComposable.UseMutationReturn<
+    QuitGameMutation,
+    QuitGameMutationVariables
+  >;
 export const GetOneGameDocument = gql`
-  query getOneGame($id: String!) {
-    getOneGame(id: $id) {
+  query getOneGame($gameId: ID!) {
+    getOneGame(gameId: $gameId) {
       gameId
       gameName
       status
@@ -601,20 +852,20 @@ export const GetOneGameDocument = gql`
  *
  * @example
  * const { result, loading, error } = useGetOneGameQuery({
- *   id: // value for 'id'
+ *   gameId: // value for 'gameId'
  * });
  */
 export function useGetOneGameQuery(
   variables:
     | GetOneGameQueryVariables
-    | Ref<GetOneGameQueryVariables>
+    | VueCompositionApi.Ref<GetOneGameQueryVariables>
     | ReactiveFunction<GetOneGameQueryVariables>,
   options:
     | VueApolloComposable.UseQueryOptions<
         GetOneGameQuery,
         GetOneGameQueryVariables
       >
-    | Ref<
+    | VueCompositionApi.Ref<
         VueApolloComposable.UseQueryOptions<
           GetOneGameQuery,
           GetOneGameQueryVariables
@@ -635,14 +886,14 @@ export function useGetOneGameQuery(
 export function useGetOneGameLazyQuery(
   variables:
     | GetOneGameQueryVariables
-    | Ref<GetOneGameQueryVariables>
+    | VueCompositionApi.Ref<GetOneGameQueryVariables>
     | ReactiveFunction<GetOneGameQueryVariables>,
   options:
     | VueApolloComposable.UseQueryOptions<
         GetOneGameQuery,
         GetOneGameQueryVariables
       >
-    | Ref<
+    | VueCompositionApi.Ref<
         VueApolloComposable.UseQueryOptions<
           GetOneGameQuery,
           GetOneGameQueryVariables
@@ -662,9 +913,9 @@ export function useGetOneGameLazyQuery(
 }
 export type GetOneGameQueryCompositionFunctionResult =
   VueApolloComposable.UseQueryReturn<GetOneGameQuery, GetOneGameQueryVariables>;
-export const GetGameVotesDocument = gql`
-  query getGameVotes($id: String!) {
-    getGameVotes(id: $id) {
+export const RevealVotesDocument = gql`
+  query revealVotes($gameId: ID!) {
+    getGameVotes(gameId: $gameId) {
       gameId
       gameName
       status
@@ -680,93 +931,340 @@ export const GetGameVotesDocument = gql`
 `;
 
 /**
- * __useGetGameVotesQuery__
+ * __useRevealVotesQuery__
  *
- * To run a query within a Vue component, call `useGetGameVotesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetGameVotesQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * To run a query within a Vue component, call `useRevealVotesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRevealVotesQuery` returns an object from Apollo Client that contains result, loading and error properties
  * you can use to render your UI.
  *
  * @param variables that will be passed into the query
  * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
  *
  * @example
- * const { result, loading, error } = useGetGameVotesQuery({
- *   id: // value for 'id'
+ * const { result, loading, error } = useRevealVotesQuery({
+ *   gameId: // value for 'gameId'
  * });
  */
-export function useGetGameVotesQuery(
+export function useRevealVotesQuery(
   variables:
-    | GetGameVotesQueryVariables
-    | Ref<GetGameVotesQueryVariables>
-    | ReactiveFunction<GetGameVotesQueryVariables>,
+    | RevealVotesQueryVariables
+    | VueCompositionApi.Ref<RevealVotesQueryVariables>
+    | ReactiveFunction<RevealVotesQueryVariables>,
   options:
     | VueApolloComposable.UseQueryOptions<
-        GetGameVotesQuery,
-        GetGameVotesQueryVariables
+        RevealVotesQuery,
+        RevealVotesQueryVariables
       >
-    | Ref<
+    | VueCompositionApi.Ref<
         VueApolloComposable.UseQueryOptions<
-          GetGameVotesQuery,
-          GetGameVotesQueryVariables
+          RevealVotesQuery,
+          RevealVotesQueryVariables
         >
       >
     | ReactiveFunction<
         VueApolloComposable.UseQueryOptions<
-          GetGameVotesQuery,
-          GetGameVotesQueryVariables
+          RevealVotesQuery,
+          RevealVotesQueryVariables
         >
       > = {},
 ) {
   return VueApolloComposable.useQuery<
-    GetGameVotesQuery,
-    GetGameVotesQueryVariables
-  >(GetGameVotesDocument, variables, options);
+    RevealVotesQuery,
+    RevealVotesQueryVariables
+  >(RevealVotesDocument, variables, options);
 }
-export function useGetGameVotesLazyQuery(
+export function useRevealVotesLazyQuery(
   variables:
-    | GetGameVotesQueryVariables
-    | Ref<GetGameVotesQueryVariables>
-    | ReactiveFunction<GetGameVotesQueryVariables>,
+    | RevealVotesQueryVariables
+    | VueCompositionApi.Ref<RevealVotesQueryVariables>
+    | ReactiveFunction<RevealVotesQueryVariables>,
   options:
     | VueApolloComposable.UseQueryOptions<
-        GetGameVotesQuery,
-        GetGameVotesQueryVariables
+        RevealVotesQuery,
+        RevealVotesQueryVariables
       >
-    | Ref<
+    | VueCompositionApi.Ref<
         VueApolloComposable.UseQueryOptions<
-          GetGameVotesQuery,
-          GetGameVotesQueryVariables
+          RevealVotesQuery,
+          RevealVotesQueryVariables
         >
       >
     | ReactiveFunction<
         VueApolloComposable.UseQueryOptions<
-          GetGameVotesQuery,
-          GetGameVotesQueryVariables
+          RevealVotesQuery,
+          RevealVotesQueryVariables
         >
       > = {},
 ) {
   return VueApolloComposable.useLazyQuery<
-    GetGameVotesQuery,
-    GetGameVotesQueryVariables
-  >(GetGameVotesDocument, variables, options);
+    RevealVotesQuery,
+    RevealVotesQueryVariables
+  >(RevealVotesDocument, variables, options);
 }
-export type GetGameVotesQueryCompositionFunctionResult =
+export type RevealVotesQueryCompositionFunctionResult =
   VueApolloComposable.UseQueryReturn<
-    GetGameVotesQuery,
-    GetGameVotesQueryVariables
+    RevealVotesQuery,
+    RevealVotesQueryVariables
   >;
-export const SubscribeGameDocument = gql`
-  subscription subscribeGame($gameId: String!) {
-    playingGame(gameId: $gameId) {
+export const CreateGameDocument = gql`
+  mutation createGame($input: CreateGameInput!) {
+    createGame(input: $input) {
+      user {
+        userId
+        username
+        role
+      }
+      game {
+        gameId
+        gameName
+        status
+        maxPlayers
+      }
+    }
+  }
+`;
+
+/**
+ * __useCreateGameMutation__
+ *
+ * To run a mutation, you first call `useCreateGameMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGameMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useCreateGameMutation({
+ *   variables: {
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateGameMutation(
+  options:
+    | VueApolloComposable.UseMutationOptions<
+        CreateGameMutation,
+        CreateGameMutationVariables
+      >
+    | ReactiveFunction<
+        VueApolloComposable.UseMutationOptions<
+          CreateGameMutation,
+          CreateGameMutationVariables
+        >
+      >,
+) {
+  return VueApolloComposable.useMutation<
+    CreateGameMutation,
+    CreateGameMutationVariables
+  >(CreateGameDocument, options);
+}
+export type CreateGameMutationCompositionFunctionResult =
+  VueApolloComposable.UseMutationReturn<
+    CreateGameMutation,
+    CreateGameMutationVariables
+  >;
+export const ChangeGameStatusDocument = gql`
+  mutation changeGameStatus($gameId: ID!, $input: UpdateGameInput!) {
+    changeGameStatus: updateGame(gameId: $gameId, input: $input) {
+      gameId
+      gameName
+      status
+    }
+  }
+`;
+
+/**
+ * __useChangeGameStatusMutation__
+ *
+ * To run a mutation, you first call `useChangeGameStatusMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useChangeGameStatusMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useChangeGameStatusMutation({
+ *   variables: {
+ *     gameId: // value for 'gameId'
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useChangeGameStatusMutation(
+  options:
+    | VueApolloComposable.UseMutationOptions<
+        ChangeGameStatusMutation,
+        ChangeGameStatusMutationVariables
+      >
+    | ReactiveFunction<
+        VueApolloComposable.UseMutationOptions<
+          ChangeGameStatusMutation,
+          ChangeGameStatusMutationVariables
+        >
+      >,
+) {
+  return VueApolloComposable.useMutation<
+    ChangeGameStatusMutation,
+    ChangeGameStatusMutationVariables
+  >(ChangeGameStatusDocument, options);
+}
+export type ChangeGameStatusMutationCompositionFunctionResult =
+  VueApolloComposable.UseMutationReturn<
+    ChangeGameStatusMutation,
+    ChangeGameStatusMutationVariables
+  >;
+export const DeleteUsersDocument = gql`
+  mutation deleteUsers($gameId: ID!, $input: UpdateGameInput!) {
+    deleteUsers: updateGame(gameId: $gameId, input: $input) {
+      gameId
+      gameName
+      status
+      deletedUsers
+    }
+  }
+`;
+
+/**
+ * __useDeleteUsersMutation__
+ *
+ * To run a mutation, you first call `useDeleteUsersMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUsersMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useDeleteUsersMutation({
+ *   variables: {
+ *     gameId: // value for 'gameId'
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDeleteUsersMutation(
+  options:
+    | VueApolloComposable.UseMutationOptions<
+        DeleteUsersMutation,
+        DeleteUsersMutationVariables
+      >
+    | ReactiveFunction<
+        VueApolloComposable.UseMutationOptions<
+          DeleteUsersMutation,
+          DeleteUsersMutationVariables
+        >
+      >,
+) {
+  return VueApolloComposable.useMutation<
+    DeleteUsersMutation,
+    DeleteUsersMutationVariables
+  >(DeleteUsersDocument, options);
+}
+export type DeleteUsersMutationCompositionFunctionResult =
+  VueApolloComposable.UseMutationReturn<
+    DeleteUsersMutation,
+    DeleteUsersMutationVariables
+  >;
+export const ResetUsersVotesDocument = gql`
+  mutation resetUsersVotes($gameId: ID!, $input: UpdateGameInput!) {
+    resetUsersVotes: updateGame(gameId: $gameId, input: $input) {
       gameId
       gameName
       status
       users {
         userId
         username
-        role
         vote
         hasVoted
+      }
+    }
+  }
+`;
+
+/**
+ * __useResetUsersVotesMutation__
+ *
+ * To run a mutation, you first call `useResetUsersVotesMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useResetUsersVotesMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useResetUsersVotesMutation({
+ *   variables: {
+ *     gameId: // value for 'gameId'
+ *     input: // value for 'input'
+ *   },
+ * });
+ */
+export function useResetUsersVotesMutation(
+  options:
+    | VueApolloComposable.UseMutationOptions<
+        ResetUsersVotesMutation,
+        ResetUsersVotesMutationVariables
+      >
+    | ReactiveFunction<
+        VueApolloComposable.UseMutationOptions<
+          ResetUsersVotesMutation,
+          ResetUsersVotesMutationVariables
+        >
+      >,
+) {
+  return VueApolloComposable.useMutation<
+    ResetUsersVotesMutation,
+    ResetUsersVotesMutationVariables
+  >(ResetUsersVotesDocument, options);
+}
+export type ResetUsersVotesMutationCompositionFunctionResult =
+  VueApolloComposable.UseMutationReturn<
+    ResetUsersVotesMutation,
+    ResetUsersVotesMutationVariables
+  >;
+export const SubscribeGameDocument = gql`
+  subscription subscribeGame($gameId: String!) {
+    playingGame(gameId: $gameId) {
+      ... on JoinGameEvent {
+        eventType
+        joinEventPayload: payload {
+          userId
+          username
+          role
+        }
+      }
+      ... on GameStatusEvent {
+        eventType
+        statusEventPayload: payload
+      }
+      ... on GameVoteEvent {
+        eventType
+        voteEventPayload: payload
+      }
+      ... on DeleteUsersEvent {
+        eventType
+        deleteUsersPayload: payload
+      }
+      ... on LeftGameEvent {
+        eventType
+        leftGamePayload: payload
+      }
+      ... on GameChangeNameEvent {
+        eventType
+        changeNamePayload: payload
+      }
+      ... on GameRevealVoteEvent {
+        eventType
+        revealVotesPayload: payload {
+          userId
+          vote
+        }
+      }
+      ... on GameResetEvent {
+        eventType
+        payload
       }
     }
   }
@@ -790,14 +1288,14 @@ export const SubscribeGameDocument = gql`
 export function useSubscribeGameSubscription(
   variables:
     | SubscribeGameSubscriptionVariables
-    | Ref<SubscribeGameSubscriptionVariables>
+    | VueCompositionApi.Ref<SubscribeGameSubscriptionVariables>
     | ReactiveFunction<SubscribeGameSubscriptionVariables>,
   options:
     | VueApolloComposable.UseSubscriptionOptions<
         SubscribeGameSubscription,
         SubscribeGameSubscriptionVariables
       >
-    | Ref<
+    | VueCompositionApi.Ref<
         VueApolloComposable.UseSubscriptionOptions<
           SubscribeGameSubscription,
           SubscribeGameSubscriptionVariables
