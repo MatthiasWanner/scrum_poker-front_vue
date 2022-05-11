@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onUnmounted } from 'vue';
+import { onUnmounted, ref } from 'vue';
+import useClipboard from 'vue-clipboard3';
 import PageTitle from '../components/PageTitle/PageTitle.vue';
 import gameBoardContent from '../content/game_board.json';
 import Button from '../components/UI/Button/Button.vue';
@@ -11,7 +12,24 @@ import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
 // eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../store';
 
+const { toClipboard } = useClipboard();
 const { resetStore, game, user } = useAppStore();
+
+const error = ref<string | null>(null);
+const buttonText = ref<string>(game.gameId);
+
+const copy = async (text: string) => {
+  try {
+    await toClipboard(text);
+    buttonText.value = 'Copied!';
+    setTimeout(() => {
+      buttonText.value = game.gameId;
+    }, 2000);
+  } catch (e) {
+    buttonText.value = game.gameId;
+    error.value = (e as Error).message;
+  }
+};
 
 onUnmounted(() => {
   resetStore();
@@ -28,7 +46,7 @@ onUnmounted(() => {
         <Image class="down-arrow-duo" :src="downDuo" />
       </p>
 
-      <Button :text="game.gameId" :secondary="true">
+      <Button :text="buttonText" :secondary="true" @click="copy(game.gameId)">
         <Image :src="copyLogo" />
       </Button>
 
