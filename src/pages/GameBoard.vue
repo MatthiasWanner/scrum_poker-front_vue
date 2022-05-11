@@ -1,35 +1,14 @@
 <script setup lang="ts">
-import { onUnmounted, ref } from 'vue';
-import useClipboard from 'vue-clipboard3';
-import PageTitle from '../components/PageTitle/PageTitle.vue';
-import gameBoardContent from '../content/game_board.json';
-import Button from '../components/UI/Button/Button.vue';
-import Image from '../components/Image/Image.vue';
-import downDuo from '../../public/down_duo.svg';
-import copyLogo from '../../public/copy_logo.svg';
-import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
+import { onUnmounted } from 'vue';
 
 // eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../store';
+import WaitContainer from '../components/GameBoardWait/WaitContainer.vue';
+import PlayContainer from '../components/GameBoardPlay/PlayContainer.vue';
+// eslint-disable-next-line import/no-unresolved
+import { Status } from '../api/generated';
 
-const { toClipboard } = useClipboard();
-const { resetStore, game, user } = useAppStore();
-
-const error = ref<string | null>(null);
-const buttonText = ref<string>(game.gameId);
-
-const copy = async (text: string) => {
-  try {
-    await toClipboard(text);
-    buttonText.value = 'Copied!';
-    setTimeout(() => {
-      buttonText.value = game.gameId;
-    }, 2000);
-  } catch (e) {
-    buttonText.value = game.gameId;
-    error.value = (e as Error).message;
-  }
-};
+const { resetStore, game } = useAppStore();
 
 onUnmounted(() => {
   resetStore();
@@ -38,22 +17,8 @@ onUnmounted(() => {
 
 <template>
   <section class="gameboard-container">
-    <PageTitle :title="game.gameName" />
-
-    <header v-if="user?.role === 'SCRUMMASTER'" class="scrum-master-header">
-      <p class="game-board-text">
-        #1 {{ gameBoardContent.clictoCopy }}
-        <Image class="down-arrow-duo" :src="downDuo" />
-      </p>
-
-      <Button :text="buttonText" :secondary="true" @click="copy(game.gameId)">
-        <Image :src="copyLogo" />
-      </Button>
-
-      <p class="game-board-text">#2 {{ gameBoardContent.sendId }}</p>
-    </header>
-
-    <WaitingUsersList />
+    <WaitContainer v-if="game.status === Status.Waiting" />
+    <PlayContainer v-if="game.status === Status.InProgress" />
   </section>
 </template>
 
