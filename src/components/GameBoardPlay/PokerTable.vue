@@ -1,9 +1,5 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../../store';
 import config from '../../content/config.json';
-
-const { game } = useAppStore();
 </script>
 
 <template>
@@ -13,7 +9,7 @@ const { game } = useAppStore();
 <style lang="scss" scoped>
 @use '../../scss/purple-theme';
 @use '../../scss/light-theme';
-@use '../../scss/global';
+
 .playing-users-container {
   display: flex;
   flex-direction: column;

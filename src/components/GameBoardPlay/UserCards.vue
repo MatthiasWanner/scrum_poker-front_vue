@@ -1,8 +1,20 @@
 <script setup lang="ts">
 import config from '../../content/config.json';
+// eslint-disable-next-line import/no-unresolved
+import { voteCards } from '../../constants';
+import VoteCard from './VoteCard.vue';
 </script>
 <template>
-  <section :class="`${config.defaultTheme} user-cards-container`"></section>
+  <section :class="`${config.defaultTheme} user-cards-container`">
+    <header class="user-cards-header">
+      <VoteCard
+        v-for="(card, index) in voteCards"
+        :key="index"
+        :label="card.label"
+        :value="card.value"
+      />
+    </header>
+  </section>
 </template>
 
 <style scoped lang="scss">
@@ -11,8 +23,8 @@ import config from '../../content/config.json';
 @use '../../scss/global';
 .user-cards-container {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: flex-start;
   height: 50%;
   width: 100vw;
   overflow: scroll;
@@ -25,5 +37,12 @@ import config from '../../content/config.json';
     color: purple-theme.$white;
     background-color: purple-theme.$pastel-purple;
   }
+}
+
+.user-cards-header {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 60%;
 }
 </style>
