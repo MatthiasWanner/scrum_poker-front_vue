@@ -38,11 +38,6 @@ watch(gameSubscription, (data) => {
         }
       }
     }
-
-    // const users: IUser[] = usersData.map(
-    //   ({ userId, username, role, vote }) => ({ userId, username, role, vote }),
-    // );
-    // addPlayers(users);
   }
 });
 
@@ -50,7 +45,15 @@ onResult(({ data }) => {
   if (data.getOneGame) {
     const { users, status } = data.getOneGame;
     setGameStatus(status);
-    addPlayers(users);
+    addPlayers(
+      users.map(({ hasVoted, role, userId, username, vote }) => ({
+        hasVoted,
+        role,
+        userId,
+        username,
+        vote,
+      })),
+    );
   }
 });
 
@@ -64,7 +67,7 @@ const handleClick = () => {
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
       <li v-for="user in game.users" :key="user.userId" class="user-item">
-        {{ userConnected?.userId === user.userId ? '🤓 You' : user.username }}
+        {{ userConnected?.userId === user.userId ? 'You' : user.username }}
       </li>
     </ul>
     <footer class="wait-users-list-footer">

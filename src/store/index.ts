@@ -40,7 +40,7 @@ export const useAppStore = () => {
 
   const setUser = (user: User | null) => (appStore.user = user);
   const setGame = (game: IAppStore['game']) => (appStore.game = game);
-  const addPlayers = (players: UserInGame[]) => {
+  const addPlayers = (players: Omit<UserInGame, '__typename'>[]) => {
     const initialPlayers = appStore.game.users;
     const nonExistentPlayers = players.filter(
       (player) =>
