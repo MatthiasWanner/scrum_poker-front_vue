@@ -51,5 +51,59 @@ const { game, user: userConnected } = useAppStore();
     color: purple-theme.$white;
     background-color: purple-theme.$pastel-purple;
   }
+  & ul {
+    padding: 0 10px;
+    margin: 0;
+  }
+}
+
+.game-name {
+  margin: 0 0 20px 0; /* top | right | bottom | left */
+  font-size: x-large;
+}
+
+.playing-user-item {
+  display: flex;
+  width: 100%;
+  text-align: start;
+  font-size: larger;
+  list-style: none;
+  margin: 0 0 20px; /* top | horizontal | bottom */
+  padding: 0;
+  line-height: 1;
+}
+
+.user-emoticon {
+  display: flex;
+  align-items: center;
+  margin: 0 5px 0 0; /* top | right | bottom | left */
+  font-size: xx-large;
+}
+
+.user-infos {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 0;
+}
+
+.username {
+  font-weight: bold;
+  margin: 0;
+}
+
+.user-status {
+  font-size: medium;
+}
+
+.user-result {
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  align-items: center;
+  width: 50px;
+  background-color: purple-theme.$dark-purple;
+  border-radius: 2px;
+  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.3);
 }
 </style>
