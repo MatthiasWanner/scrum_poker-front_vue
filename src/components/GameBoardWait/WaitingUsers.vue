@@ -50,7 +50,15 @@ onResult(({ data }) => {
   if (data.getOneGame) {
     const { users, status } = data.getOneGame;
     setGameStatus(status);
-    addPlayers(users);
+    addPlayers(
+      users.map(({ hasVoted, role, userId, username, vote }) => ({
+        hasVoted,
+        role,
+        userId,
+        username,
+        vote,
+      })),
+    );
   }
 });
 
