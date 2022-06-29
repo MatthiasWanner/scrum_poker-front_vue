@@ -3,5 +3,7 @@
   "sendId": "Send the id to your team",
   "awaiting": "Awaiting for the team...",
   "start": "Start",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "waitingVote": "waiting",
+  "newVote": "New vote"
 }

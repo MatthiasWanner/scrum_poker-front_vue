@@ -4,6 +4,8 @@ import { useAppStore } from '../../store';
 // eslint-disable-next-line import/no-unresolved
 import { UserInGame } from '../../api/generated';
 
+import gameBoardContent from '../../content/game_board.json';
+
 interface IProps {
   user: Omit<UserInGame, '__typename'>;
 }
@@ -19,7 +21,7 @@ defineProps<IProps>();
       {{ userConnected?.userId === user.userId ? 'You' : user.username }}
     </span>
     <span class="user-status">
-      {{ user.hasVoted ? '' : 'waiting...' }}
+      {{ user.hasVoted ? '' : `${gameBoardContent.waitingVote}...` }}
     </span>
   </div>
 </template>
