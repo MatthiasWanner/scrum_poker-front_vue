@@ -3,15 +3,16 @@ import config from '../../content/config.json';
 
 interface IProps {
   vote?: number | null;
+  hasVoted: boolean;
 }
 
 defineProps<IProps>();
 </script>
 
 <template>
-  <div :class="`${config.defaultTheme} user-result`">
-    {{ vote || '?' }}
-  </div>
+  <p :class="`${config.defaultTheme} user-result`">
+    {{ hasVoted ? vote || '?' : '' }}
+  </p>
 </template>
 
 <style scoped lang="scss">
@@ -25,6 +26,7 @@ defineProps<IProps>();
   width: 50px;
   border-radius: 2px;
   box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.3);
+  margin: 0;
   &.purple {
     background-color: purple-theme.$dark-purple;
   }
