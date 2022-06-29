@@ -6,6 +6,7 @@ import {
   useSubscribeGameSubscription,
   useGetOneGameQuery,
   Status,
+  useChangeGameStatusMutation,
   // eslint-disable-next-line import/no-unresolved
 } from '../../api/generated';
 import config from '../../content/config.json';
@@ -20,6 +21,7 @@ const { onResult } = useGetOneGameQuery({ gameId: game.gameId });
 const { result: gameSubscription } = useSubscribeGameSubscription({
   gameId: game.gameId,
 });
+const { mutate, onDone } = useChangeGameStatusMutation({});
 
 watch(gameSubscription, (data) => {
   if (data) {
@@ -57,8 +59,12 @@ onResult(({ data }) => {
   }
 });
 
-const handleClick = () => {
+onDone(() => {
   setGameStatus(Status.InProgress);
+});
+
+const handleClick = async () => {
+  await mutate({ gameId: game.gameId, input: { status: Status.InProgress } });
 };
 </script>
 
