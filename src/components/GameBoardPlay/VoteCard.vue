@@ -1,9 +1,11 @@
 <script setup lang="ts">
+// eslint-disable-next-line import/no-unresolved
+import { Vote } from '../../api/generated';
 import config from '../../content/config.json';
 
 interface IProps {
   label: string;
-  value: number;
+  value: Vote;
 }
 
 defineProps<IProps>();
