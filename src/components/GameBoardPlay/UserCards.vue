@@ -2,8 +2,26 @@
 import config from '../../content/config.json';
 // eslint-disable-next-line import/no-unresolved
 import { voteCards } from '../../constants';
+import gameBoardContent from '../../content/game_board.json';
 import VoteCard from './VoteCard.vue';
+// eslint-disable-next-line import/no-unresolved
+import { useAppStore } from '../../store';
+import Button from '../UI/Button/Button.vue';
+// eslint-disable-next-line import/no-unresolved
+import { useResetUsersVotesMutation } from '../../api/generated';
+
+const {
+  user: userConnected,
+  game: { gameId },
+} = useAppStore();
+
+const { mutate } = useResetUsersVotesMutation({});
+
+const handleClick = () => {
+  mutate({ gameId, input: { resetVotes: true } });
+};
 </script>
+
 <template>
   <section :class="`${config.defaultTheme} user-cards-container`">
     <header class="user-cards-header">
@@ -14,6 +32,14 @@ import VoteCard from './VoteCard.vue';
         :value="card.value"
       />
     </header>
+    <footer class="user-cards-footer">
+      <Button
+        v-if="userConnected?.role === 'SCRUMMASTER'"
+        class="again-button"
+        :text="gameBoardContent.newVote"
+        @click="handleClick"
+      />
+    </footer>
   </section>
 </template>
 
@@ -23,8 +49,9 @@ import VoteCard from './VoteCard.vue';
 @use '../../scss/global';
 .user-cards-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   height: 50%;
   width: 100vw;
   overflow: scroll;
@@ -44,5 +71,14 @@ import VoteCard from './VoteCard.vue';
   justify-content: center;
   flex-wrap: wrap;
   height: 60%;
+}
+
+.user-cards-footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+.again-button {
+  margin-bottom: 10px;
 }
 </style>
