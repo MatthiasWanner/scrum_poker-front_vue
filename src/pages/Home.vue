@@ -26,11 +26,11 @@ onMounted(() => {
   <section class="page-main-section">
     <h3 class="home-title">{{ homeContent.title }}</h3>
     <Button
-      :text="homeContent.createParty"
+      :text="homeContent.createGame"
       :handle-click="() => router.push('/create')"
     />
     <Button
-      :text="homeContent.joinParty"
+      :text="homeContent.joinGame"
       :handle-click="() => router.push('/join')"
     />
   </section>
