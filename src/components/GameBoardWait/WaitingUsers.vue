@@ -1,9 +1,5 @@
 <script setup lang="ts">
-// Rule disabled to respect User interface in store deleting __typename key
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { watch } from 'vue';
 import {
-  useSubscribeGameSubscription,
   useGetOneGameQuery,
   Status,
   useChangeGameStatusMutation,
@@ -19,30 +15,8 @@ import { useAppStore } from '../../store';
 
 const { setGameStatus, addPlayers, game, user: userConnected } = useAppStore();
 const { onResult } = useGetOneGameQuery({ gameId: game.gameId });
-const { result: gameSubscription } = useSubscribeGameSubscription({
-  gameId: game.gameId,
-});
+
 const { mutate, onDone } = useChangeGameStatusMutation({});
-
-watch(gameSubscription, (data) => {
-  if (data) {
-    const events = data.playingGame;
-
-    for (const event of events) {
-      switch (event.__typename) {
-        case 'JoinGameEvent': {
-          const { __typename, ...payload } = event.joinEventPayload;
-          addPlayers([{ ...payload, vote: null, hasVoted: false }]);
-          break;
-        }
-        case 'GameStatusEvent': {
-          setGameStatus(event.statusEventPayload);
-          break;
-        }
-      }
-    }
-  }
-});
 
 onResult(({ data }) => {
   if (data.getOneGame) {
