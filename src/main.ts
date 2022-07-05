@@ -1,12 +1,10 @@
-import { createApp, provide, h } from 'vue';
-import { createPinia } from 'pinia';
 import { DefaultApolloClient } from '@vue/apollo-composable';
-import App from './App.vue';
+import { createPinia } from 'pinia';
+import { createApp, h, provide } from 'vue';
 
-// eslint-disable-next-line import/no-unresolved
-import { router } from './router';
-// eslint-disable-next-line import/no-unresolved
 import apolloClient from './api/apollo-client.graphql';
+import App from './App.vue';
+import { router } from './router';
 
 createApp({
   setup() {
@@ -18,5 +16,3 @@ createApp({
   .use(router)
   .use(createPinia())
   .mount('#app');
-
-// FIXME: eslint import/no-resolved

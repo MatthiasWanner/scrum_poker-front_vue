@@ -1,61 +1,42 @@
 <script setup lang="ts">
-// Rule disabled to respect User interface in store deleting __typename key
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { watch } from 'vue';
 import {
-  useSubscribeGameSubscription,
-  useGetOneGameQuery,
   Status,
-  // eslint-disable-next-line import/no-unresolved
+  useChangeGameStatusMutation,
+  useGetOneGameQuery,
+  UserRole,
 } from '../../api/generated';
 import config from '../../content/config.json';
 import gameBoardContent from '../../content/game_board.json';
-import Button from '../UI/Button/Button.vue';
-
-// eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../../store';
+import Button from '../UI/Button/Button.vue';
 
 const { setGameStatus, addPlayers, game, user: userConnected } = useAppStore();
 const { onResult } = useGetOneGameQuery({ gameId: game.gameId });
-const { result: gameSubscription } = useSubscribeGameSubscription({
-  gameId: game.gameId,
-});
 
-watch(gameSubscription, (data) => {
-  if (data) {
-    const events = data.playingGame;
-
-    for (const event of events) {
-      switch (event.__typename) {
-        case 'JoinGameEvent': {
-          const { __typename, ...payload } = event.joinEventPayload;
-          addPlayers([{ ...payload, vote: null, hasVoted: false }]);
-          break;
-        }
-        case 'GameStatusEvent': {
-          setGameStatus(event.statusEventPayload);
-          break;
-        }
-      }
-    }
-
-    // const users: IUser[] = usersData.map(
-    //   ({ userId, username, role, vote }) => ({ userId, username, role, vote }),
-    // );
-    // addPlayers(users);
-  }
-});
+const { mutate, onDone } = useChangeGameStatusMutation({});
 
 onResult(({ data }) => {
   if (data.getOneGame) {
     const { users, status } = data.getOneGame;
     setGameStatus(status);
-    addPlayers(users);
+    addPlayers(
+      users.map(({ hasVoted, role, userId, username, vote }) => ({
+        hasVoted,
+        role,
+        userId,
+        username,
+        vote,
+      })),
+    );
   }
 });
 
-const handleClick = () => {
+onDone(() => {
   setGameStatus(Status.InProgress);
+});
+
+const handleClick = async () => {
+  await mutate({ gameId: game.gameId, input: { status: Status.InProgress } });
 };
 </script>
 
@@ -64,12 +45,12 @@ const handleClick = () => {
     <p class="wait-users-list-title">{{ gameBoardContent.awaiting }}</p>
     <ul>
       <li v-for="user in game.users" :key="user.userId" class="user-item">
-        {{ userConnected?.userId === user.userId ? '🤓 You' : user.username }}
+        {{ userConnected?.userId === user.userId ? 'You' : user.username }}
       </li>
     </ul>
     <footer class="wait-users-list-footer">
       <Button
-        v-if="userConnected?.role === 'SCRUMMASTER'"
+        v-if="userConnected?.role === UserRole.Scrummaster"
         class="start-button"
         :text="gameBoardContent.start"
         @click="handleClick"

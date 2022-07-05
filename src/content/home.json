@@ -1,5 +1,5 @@
 {
   "title": "What do you want to do ?",
-  "createParty": "Create a party",
-  "joinParty": "Join a party"
+  "createGame": "Create a game",
+  "joinGame": "Join a game"
 }

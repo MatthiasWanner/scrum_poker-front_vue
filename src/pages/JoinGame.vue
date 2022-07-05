@@ -1,20 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import joinGameContent from '../content/join_game.json';
-// eslint-disable-next-line import/no-unresolved
-import useForm from '../composables/useForm';
-import PageTitle from '../components/PageTitle/PageTitle.vue';
-import TextInput from '../components/Forms/TextInput/TextInput.vue';
-import Button from '../components/UI/Button/Button.vue';
-
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../store';
-// eslint-disable-next-line import/no-unresolved
-import { router } from '../router';
-
-// eslint-disable-next-line import/no-unresolved
 import { useJoinGameMutation } from '../api/generated';
+import TextInput from '../components/Forms/TextInput/TextInput.vue';
+import PageTitle from '../components/PageTitle/PageTitle.vue';
+import Button from '../components/UI/Button/Button.vue';
+import useForm from '../composables/useForm';
+import joinGameContent from '../content/join_game.json';
+import messagesContent from '../content/messages.json';
+import { router } from '../router';
+import { useAppStore } from '../store';
 
 interface IFormData {
   gameId: string;
@@ -35,7 +30,7 @@ const submitForm = async ({ gameId, username }: IFormData) => {
       message.value = (e as Error).message;
     }
   }
-  return (message.value = `Please complete all fields 🤦‍♂️`);
+  return (message.value = messagesContent.allFieldsRequired);
 };
 
 onDone(({ data }) => {

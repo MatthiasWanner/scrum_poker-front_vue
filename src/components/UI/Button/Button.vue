@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import config from '../../../content/config.json';
 
 interface IProps {
@@ -31,7 +32,6 @@ const theme = ref<string>(config.defaultTheme);
 @use '../../../scss/light-theme';
 .app-button {
   display: flex;
-  justify-content: space-around;
   align-items: center;
   width: 100%;
   padding: 5px;
@@ -43,6 +43,12 @@ const theme = ref<string>(config.defaultTheme);
   cursor: pointer;
   font-size: larger;
   font-weight: bold;
+  &.primary {
+    justify-content: space-around;
+  }
+  &.secondary {
+    justify-content: space-between;
+  }
   &.purple {
     color: purple-theme.$white;
     &.primary {
@@ -54,7 +60,7 @@ const theme = ref<string>(config.defaultTheme);
   }
 
   .button-label {
-    max-width: 100%;
+    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

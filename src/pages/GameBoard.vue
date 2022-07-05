@@ -1,17 +1,61 @@
 <script setup lang="ts">
-import { onUnmounted } from 'vue';
-import PageTitle from '../components/PageTitle/PageTitle.vue';
-import gameBoardContent from '../content/game_board.json';
-import Button from '../components/UI/Button/Button.vue';
-import Image from '../components/Image/Image.vue';
-import downDuo from '../../public/down_duo.svg';
-import copyLogo from '../../public/copy_logo.svg';
-import WaitingUsersList from '../components/UserList/WaitingUsers.vue';
+import { onUnmounted, watch } from 'vue';
 
-// eslint-disable-next-line import/no-unresolved
+import { Status, useSubscribeGameSubscription } from '../api/generated';
+import PlayContainer from '../components/GameBoardPlay/PlayContainer.vue';
+import WaitContainer from '../components/GameBoardWait/WaitContainer.vue';
+import { router } from '../router';
 import { useAppStore } from '../store';
 
-const { resetStore, game, user } = useAppStore();
+const { resetStore, game } = useAppStore();
+
+const {
+  game: { gameId },
+  setPlayerVoteStatus,
+  resetPlayersVotes,
+  revealPlayersVotes,
+  addPlayers,
+  setGameStatus,
+} = useAppStore();
+
+const { result: gameSubscription } = useSubscribeGameSubscription({
+  gameId,
+});
+
+watch(gameSubscription, (data) => {
+  if (data) {
+    const events = data.playingGame;
+
+    for (const event of events) {
+      switch (event.__typename) {
+        case 'GameVoteEvent': {
+          setPlayerVoteStatus(event.voteEventPayload, true);
+          break;
+        }
+        case 'GameStatusEvent': {
+          if (event.statusEventPayload === Status.InProgress)
+            setGameStatus(event.statusEventPayload);
+          if (event.statusEventPayload === Status.Finished) router.push('/');
+          break;
+        }
+        case 'GameResetEvent': {
+          resetPlayersVotes();
+          break;
+        }
+        case 'GameRevealVoteEvent': {
+          revealPlayersVotes(event.revealVotesPayload);
+          break;
+        }
+        case 'JoinGameEvent': {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { __typename, ...payload } = event.joinEventPayload;
+          addPlayers([{ ...payload, vote: null, hasVoted: false }]);
+          break;
+        }
+      }
+    }
+  }
+});
 
 onUnmounted(() => {
   resetStore();
@@ -20,22 +64,8 @@ onUnmounted(() => {
 
 <template>
   <section class="gameboard-container">
-    <PageTitle :title="game.gameName" />
-
-    <header v-if="user?.role === 'SCRUMMASTER'" class="scrum-master-header">
-      <p class="game-board-text">
-        #1 {{ gameBoardContent.clictoCopy }}
-        <Image class="down-arrow-duo" :src="downDuo" />
-      </p>
-
-      <Button :text="game.gameId" :secondary="true">
-        <Image :src="copyLogo" />
-      </Button>
-
-      <p class="game-board-text">#2 {{ gameBoardContent.sendId }}</p>
-    </header>
-
-    <WaitingUsersList />
+    <WaitContainer v-if="game.status === Status.Waiting" />
+    <PlayContainer v-if="game.status === Status.InProgress" />
   </section>
 </template>
 
