@@ -7,6 +7,7 @@ import PageTitle from '../components/PageTitle/PageTitle.vue';
 import Button from '../components/UI/Button/Button.vue';
 import useForm from '../composables/useForm';
 import joinGameContent from '../content/join_game.json';
+import messagesContent from '../content/messages.json';
 import { router } from '../router';
 import { useAppStore } from '../store';
 
@@ -29,7 +30,7 @@ const submitForm = async ({ gameId, username }: IFormData) => {
       message.value = (e as Error).message;
     }
   }
-  return (message.value = `Please complete all fields 🤦‍♂️`);
+  return (message.value = messagesContent.allFieldsRequired);
 };
 
 onDone(({ data }) => {
