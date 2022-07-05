@@ -38,7 +38,7 @@ const getButtonProps = () => {
     };
 
   return {
-    text: 'Reveal Votes',
+    text: gameBoardContent.revealVotes,
     handleClick: getVotes,
   };
 };
