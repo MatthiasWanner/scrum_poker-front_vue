@@ -7,6 +7,20 @@ import logo from '../../public/logo_rectangle.svg';
 // FIXME: eslint import/no-unresolved
 // eslint-disable-next-line import/no-unresolved
 import { router } from '../router';
+import { onMounted } from 'vue';
+import apolloClient from '../api/apollo-client.graphql';
+import { logout } from '../api/queries/common-mutations';
+
+onMounted(() => {
+  apolloClient
+    .mutate({ mutation: logout })
+    .then(() => {
+      console.info('Clear old session sucessfull');
+    })
+    .catch(() => {
+      console.info('No active session');
+    });
+});
 </script>
 
 <template>
