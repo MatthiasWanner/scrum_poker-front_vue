@@ -4,45 +4,28 @@ import { useSendVoteMutation, Vote } from '../../api/generated';
 // eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../../store';
 import config from '../../content/config.json';
-import { ref } from 'vue';
 
 interface IProps {
   label: string;
   value: Vote;
+  isDisabled?: boolean;
 }
 
 const props = defineProps<IProps>();
 
-const additionnalCardClass = ref<string>('');
+const appStore = useAppStore();
+const { game } = appStore;
 
-const {
-  user: userConnected,
-  game: { users, gameId },
-} = useAppStore();
-
-const { mutate, onDone, loading } = useSendVoteMutation({});
-
-onDone(() => {
-  additionnalCardClass.value = 'played';
-});
+const { mutate, loading } = useSendVoteMutation({});
 
 const handleClick = () => {
-  console.log('Clic', props.value);
-  mutate({ gameId, input: { vote: props.value } });
+  mutate({ gameId: game.gameId, input: { vote: props.value } });
 };
 </script>
 
 <template>
-  <div
-    :class="`${config.defaultTheme} vote-card-container ${additionnalCardClass}`"
-  >
-    <button
-      :disabled="
-        loading ||
-        users.find((u) => u.userId === userConnected?.userId)?.hasVoted
-      "
-      @click="handleClick"
-    >
+  <div :class="`${config.defaultTheme} vote-card-container`">
+    <button :disabled="loading || isDisabled" @click="handleClick">
       <p>{{ label }}</p>
     </button>
   </div>
