@@ -7,6 +7,7 @@ import {
   useGetOneGameQuery,
   Status,
   useChangeGameStatusMutation,
+  UserRole,
   // eslint-disable-next-line import/no-unresolved
 } from '../../api/generated';
 import config from '../../content/config.json';
@@ -78,7 +79,7 @@ const handleClick = async () => {
     </ul>
     <footer class="wait-users-list-footer">
       <Button
-        v-if="userConnected?.role === 'SCRUMMASTER'"
+        v-if="userConnected?.role === UserRole.Scrummaster"
         class="start-button"
         :text="gameBoardContent.start"
         @click="handleClick"

@@ -11,6 +11,7 @@ import WaitingUsersList from './WaitingUsers.vue';
 
 // eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../../store';
+import { UserRole } from '../../api/generated';
 
 const { toClipboard } = useClipboard();
 const { game, user } = useAppStore();
@@ -35,7 +36,10 @@ const copy = async (text: string) => {
 <template>
   <PageTitle :title="game.gameName" />
 
-  <header v-if="user?.role === 'SCRUMMASTER'" class="scrum-master-header">
+  <header
+    v-if="user?.role === UserRole.Scrummaster"
+    class="scrum-master-header"
+  >
     <p class="game-board-text">
       #1 {{ gameBoardContent.clictoCopy }}
       <Image class="down-arrow-duo" :src="downDuo" />

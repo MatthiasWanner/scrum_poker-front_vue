@@ -2,6 +2,7 @@ import type {
   CurrentGame,
   User,
   UserInGame,
+  UserRole,
   UserVotePayload,
 } from '@src/api/generated';
 // eslint-disable-next-line import/no-unresolved
@@ -11,7 +12,7 @@ import { defineStore } from 'pinia';
 export interface IUser {
   userId: string;
   username: string;
-  role: 'SCRUMMASTER' | 'DEVELOPER';
+  role: UserRole;
   vote: number | null;
 }
 
