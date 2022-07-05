@@ -4,10 +4,10 @@ import type {
   UserInGame,
   UserRole,
   UserVotePayload,
-} from '@src/api/generated';
-// eslint-disable-next-line import/no-unresolved
-import { Status } from '../api/generated';
+} from '../api/generated';
 import { defineStore } from 'pinia';
+
+import { Status } from '../api/generated';
 
 export interface IUser {
   userId: string;

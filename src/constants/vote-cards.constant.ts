@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Vote } from '../api/generated';
 
 const voteCards = [

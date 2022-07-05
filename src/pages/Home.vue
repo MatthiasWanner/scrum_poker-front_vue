@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import homeContent from '../content/home.json';
-import Button from '../components/UI/Button/Button.vue';
-import Image from '../components/Image/Image.vue';
-import logo from '../../public/logo_rectangle.svg';
-
-// FIXME: eslint import/no-unresolved
-// eslint-disable-next-line import/no-unresolved
-import { router } from '../router';
 import { onMounted } from 'vue';
+
+import logo from '../../public/logo_rectangle.svg';
 import apolloClient from '../api/apollo-client.graphql';
 import { logout } from '../api/queries/common-mutations';
+import Image from '../components/Image/Image.vue';
+import Button from '../components/UI/Button/Button.vue';
+import homeContent from '../content/home.json';
+import { router } from '../router';
 
 onMounted(() => {
   apolloClient

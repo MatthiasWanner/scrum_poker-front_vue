@@ -1,10 +1,7 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../../store';
-// eslint-disable-next-line import/no-unresolved
 import { UserInGame } from '../../api/generated';
-
 import gameBoardContent from '../../content/game_board.json';
+import { useAppStore } from '../../store';
 
 interface IProps {
   user: Omit<UserInGame, '__typename'>;

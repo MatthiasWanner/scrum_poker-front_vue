@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { onUnmounted, watch } from 'vue';
 
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../store';
-import WaitContainer from '../components/GameBoardWait/WaitContainer.vue';
-import PlayContainer from '../components/GameBoardPlay/PlayContainer.vue';
-// eslint-disable-next-line import/no-unresolved
 import { Status, useSubscribeGameSubscription } from '../api/generated';
+import PlayContainer from '../components/GameBoardPlay/PlayContainer.vue';
+import WaitContainer from '../components/GameBoardWait/WaitContainer.vue';
 import { router } from '../router';
+import { useAppStore } from '../store';
 
 const { resetStore, game } = useAppStore();
 

@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import config from '../../content/config.json';
-// eslint-disable-next-line import/no-unresolved
-import { voteCards } from '../../constants';
-import gameBoardContent from '../../content/game_board.json';
-import VoteCard from './VoteCard.vue';
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../../store';
-import Button from '../UI/Button/Button.vue';
-// eslint-disable-next-line import/no-unresolved
+import { storeToRefs } from 'pinia';
+
 import {
   useResetUsersVotesMutation,
   useRevealVotesQuery,
   UserRole,
 } from '../../api/generated';
-import { storeToRefs } from 'pinia';
+import { voteCards } from '../../constants';
+import config from '../../content/config.json';
+import gameBoardContent from '../../content/game_board.json';
+import { useAppStore } from '../../store';
+import Button from '../UI/Button/Button.vue';
+import VoteCard from './VoteCard.vue';
 
 const appStore = useAppStore();
 const { user: userConnected, game, isVoteSecret } = storeToRefs(appStore);

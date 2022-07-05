@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import {
-  useGetOneGameQuery,
   Status,
   useChangeGameStatusMutation,
+  useGetOneGameQuery,
   UserRole,
-  // eslint-disable-next-line import/no-unresolved
 } from '../../api/generated';
 import config from '../../content/config.json';
 import gameBoardContent from '../../content/game_board.json';
-import Button from '../UI/Button/Button.vue';
-
-// eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../../store';
+import Button from '../UI/Button/Button.vue';
 
 const { setGameStatus, addPlayers, game, user: userConnected } = useAppStore();
 const { onResult } = useGetOneGameQuery({ gameId: game.gameId });

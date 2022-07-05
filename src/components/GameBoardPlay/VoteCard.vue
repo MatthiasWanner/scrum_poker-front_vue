@@ -1,9 +1,7 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/no-unresolved
 import { useSendVoteMutation, Vote } from '../../api/generated';
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../../store';
 import config from '../../content/config.json';
+import { useAppStore } from '../../store';
 
 interface IProps {
   label: string;

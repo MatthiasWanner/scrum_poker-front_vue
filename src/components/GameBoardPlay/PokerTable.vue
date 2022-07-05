@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../../store';
 import config from '../../content/config.json';
+import { useAppStore } from '../../store';
 import UserEmoticon from './UserEmoticon.vue';
 import UserInfos from './UserInfos.vue';
 import UserResult from './UserResult.vue';
