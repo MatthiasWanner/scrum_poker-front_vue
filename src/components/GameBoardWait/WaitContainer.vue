@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import useClipboard from 'vue-clipboard3';
-import PageTitle from '../../components/PageTitle/PageTitle.vue';
-import gameBoardContent from '../../content/game_board.json';
-import Button from '../../components/UI/Button/Button.vue';
-import Image from '../../components/Image/Image.vue';
-import downDuo from '../../../public/down_duo.svg';
-import copyLogo from '../../../public/copy_logo.svg';
-import WaitingUsersList from './WaitingUsers.vue';
 
-// eslint-disable-next-line import/no-unresolved
+import copyLogo from '../../../public/copy_logo.svg';
+import downDuo from '../../../public/down_duo.svg';
+import { UserRole } from '../../api/generated';
+import Image from '../../components/Image/Image.vue';
+import PageTitle from '../../components/PageTitle/PageTitle.vue';
+import Button from '../../components/UI/Button/Button.vue';
+import gameBoardContent from '../../content/game_board.json';
 import { useAppStore } from '../../store';
+import WaitingUsersList from './WaitingUsers.vue';
 
 const { toClipboard } = useClipboard();
 const { game, user } = useAppStore();
@@ -35,7 +35,10 @@ const copy = async (text: string) => {
 <template>
   <PageTitle :title="game.gameName" />
 
-  <header v-if="user?.role === 'SCRUMMASTER'" class="scrum-master-header">
+  <header
+    v-if="user?.role === UserRole.Scrummaster"
+    class="scrum-master-header"
+  >
     <p class="game-board-text">
       #1 {{ gameBoardContent.clictoCopy }}
       <Image class="down-arrow-duo" :src="downDuo" />

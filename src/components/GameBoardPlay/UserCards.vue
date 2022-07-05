@@ -1,9 +1,47 @@
 <script setup lang="ts">
-import config from '../../content/config.json';
-// eslint-disable-next-line import/no-unresolved
+import { storeToRefs } from 'pinia';
+
+import {
+  useResetUsersVotesMutation,
+  useRevealVotesQuery,
+  UserRole,
+} from '../../api/generated';
 import { voteCards } from '../../constants';
+import config from '../../content/config.json';
+import gameBoardContent from '../../content/game_board.json';
+import { useAppStore } from '../../store';
+import Button from '../UI/Button/Button.vue';
 import VoteCard from './VoteCard.vue';
+
+const appStore = useAppStore();
+const { user: userConnected, game, isVoteSecret } = storeToRefs(appStore);
+
+const { mutate } = useResetUsersVotesMutation({});
+
+const { refetch: getVotes } = useRevealVotesQuery(
+  {
+    gameId: game.value.gameId,
+  },
+  {
+    enabled: userConnected.value?.role === UserRole.Scrummaster,
+  },
+);
+
+const getButtonProps = () => {
+  if (game.value.users.every((u) => u.vote))
+    return {
+      text: gameBoardContent.newVote,
+      handleClick: () =>
+        mutate({ gameId: game.value.gameId, input: { resetVotes: true } }),
+    };
+
+  return {
+    text: gameBoardContent.revealVotes,
+    handleClick: getVotes,
+  };
+};
 </script>
+
 <template>
   <section :class="`${config.defaultTheme} user-cards-container`">
     <header class="user-cards-header">
@@ -12,8 +50,19 @@ import VoteCard from './VoteCard.vue';
         :key="index"
         :label="card.label"
         :value="card.value"
+        :is-disabled="
+          game.users.find((u) => u.userId === userConnected?.userId)?.hasVoted
+        "
       />
     </header>
+    <footer class="user-cards-footer">
+      <Button
+        v-if="userConnected?.role === UserRole.Scrummaster && !isVoteSecret"
+        class="scrum-button"
+        :text="getButtonProps().text"
+        :handle-click="getButtonProps().handleClick"
+      />
+    </footer>
   </section>
 </template>
 
@@ -23,8 +72,9 @@ import VoteCard from './VoteCard.vue';
 @use '../../scss/global';
 .user-cards-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   height: 50%;
   width: 100vw;
   overflow: scroll;
@@ -44,5 +94,14 @@ import VoteCard from './VoteCard.vue';
   justify-content: center;
   flex-wrap: wrap;
   height: 60%;
+}
+
+.user-cards-footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+.scrum-button {
+  margin-bottom: 10px;
 }
 </style>

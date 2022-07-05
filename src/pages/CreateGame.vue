@@ -1,20 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import createGameContent from '../content/create_game.json';
-import PageTitle from '../components/PageTitle/PageTitle.vue';
-import TextInput from '../components/Forms/TextInput/TextInput.vue';
-import Button from '../components/UI/Button/Button.vue';
-
-// eslint-disable-next-line import/no-unresolved
-import useForm from '../composables/useForm';
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../store';
-// eslint-disable-next-line import/no-unresolved
-import { router } from '../router';
-// eslint-disable-next-line import/no-unresolved
 import { useCreateGameMutation } from '../api/generated';
-
+import TextInput from '../components/Forms/TextInput/TextInput.vue';
+import PageTitle from '../components/PageTitle/PageTitle.vue';
+import Button from '../components/UI/Button/Button.vue';
+import useForm from '../composables/useForm';
+import createGameContent from '../content/create_game.json';
+import { router } from '../router';
+import { useAppStore } from '../store';
 interface IFormData {
   gameName: string;
   username: string;

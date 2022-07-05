@@ -1,17 +1,31 @@
 <script setup lang="ts">
+import { useSendVoteMutation, Vote } from '../../api/generated';
 import config from '../../content/config.json';
+import { useAppStore } from '../../store';
 
 interface IProps {
   label: string;
-  value: number;
+  value: Vote;
+  isDisabled?: boolean;
 }
 
-defineProps<IProps>();
+const props = defineProps<IProps>();
+
+const appStore = useAppStore();
+const { game } = appStore;
+
+const { mutate, loading } = useSendVoteMutation({});
+
+const handleClick = () => {
+  mutate({ gameId: game.gameId, input: { vote: props.value } });
+};
 </script>
 
 <template>
   <div :class="`${config.defaultTheme} vote-card-container`">
-    <p>{{ label }}</p>
+    <button :disabled="loading || isDisabled" @click="handleClick">
+      <p>{{ label }}</p>
+    </button>
   </div>
 </template>
 
@@ -33,5 +47,16 @@ defineProps<IProps>();
   &.purple {
     background-color: purple-theme.$dark-purple;
   }
+}
+
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  width: 100%;
 }
 </style>

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import Home from '../pages/Home.vue';
 import CreateGame from '../pages/CreateGame.vue';
-import JoinGame from '../pages/JoinGame.vue';
 import GameBoard from '../pages/GameBoard.vue';
+import Home from '../pages/Home.vue';
+import JoinGame from '../pages/JoinGame.vue';
 
 const routes = [
   { path: '/', component: Home },

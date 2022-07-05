@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Overlay from './components/UI/Overlay.vue';
 import PageContainer from './components/UI/Container/PageContainer.vue';
+import Overlay from './components/UI/Overlay.vue';
 const theme = 'purple';
 </script>
 

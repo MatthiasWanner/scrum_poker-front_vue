@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import config from '../../../content/config.json';
 
 interface IProps {

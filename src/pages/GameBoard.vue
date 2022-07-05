@@ -1,14 +1,61 @@
 <script setup lang="ts">
-import { onUnmounted } from 'vue';
+import { onUnmounted, watch } from 'vue';
 
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../store';
-import WaitContainer from '../components/GameBoardWait/WaitContainer.vue';
+import { Status, useSubscribeGameSubscription } from '../api/generated';
 import PlayContainer from '../components/GameBoardPlay/PlayContainer.vue';
-// eslint-disable-next-line import/no-unresolved
-import { Status } from '../api/generated';
+import WaitContainer from '../components/GameBoardWait/WaitContainer.vue';
+import { router } from '../router';
+import { useAppStore } from '../store';
 
 const { resetStore, game } = useAppStore();
+
+const {
+  game: { gameId },
+  setPlayerVoteStatus,
+  resetPlayersVotes,
+  revealPlayersVotes,
+  addPlayers,
+  setGameStatus,
+} = useAppStore();
+
+const { result: gameSubscription } = useSubscribeGameSubscription({
+  gameId,
+});
+
+watch(gameSubscription, (data) => {
+  if (data) {
+    const events = data.playingGame;
+
+    for (const event of events) {
+      switch (event.__typename) {
+        case 'GameVoteEvent': {
+          setPlayerVoteStatus(event.voteEventPayload, true);
+          break;
+        }
+        case 'GameStatusEvent': {
+          if (event.statusEventPayload === Status.InProgress)
+            setGameStatus(event.statusEventPayload);
+          if (event.statusEventPayload === Status.Finished) router.push('/');
+          break;
+        }
+        case 'GameResetEvent': {
+          resetPlayersVotes();
+          break;
+        }
+        case 'GameRevealVoteEvent': {
+          revealPlayersVotes(event.revealVotesPayload);
+          break;
+        }
+        case 'JoinGameEvent': {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { __typename, ...payload } = event.joinEventPayload;
+          addPlayers([{ ...payload, vote: null, hasVoted: false }]);
+          break;
+        }
+      }
+    }
+  }
+});
 
 onUnmounted(() => {
   resetStore();

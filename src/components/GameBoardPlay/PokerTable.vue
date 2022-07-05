@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/no-unresolved
-import { useAppStore } from '../../store';
 import config from '../../content/config.json';
+import { useAppStore } from '../../store';
 import UserEmoticon from './UserEmoticon.vue';
 import UserInfos from './UserInfos.vue';
 import UserResult from './UserResult.vue';
@@ -23,7 +22,7 @@ const getEmoticon = () => '😂';
       >
         <UserEmoticon :emoticon="getEmoticon()" />
         <UserInfos :user="user" />
-        <UserResult :vote="user.vote" />
+        <UserResult :vote="user.vote" :has-voted="user.hasVoted" />
       </li>
     </ul>
   </section>

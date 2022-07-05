@@ -1,45 +1,19 @@
 <script setup lang="ts">
-// Rule disabled to respect User interface in store deleting __typename key
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { watch } from 'vue';
 import {
-  useSubscribeGameSubscription,
-  useGetOneGameQuery,
   Status,
-  // eslint-disable-next-line import/no-unresolved
+  useChangeGameStatusMutation,
+  useGetOneGameQuery,
+  UserRole,
 } from '../../api/generated';
 import config from '../../content/config.json';
 import gameBoardContent from '../../content/game_board.json';
-import Button from '../UI/Button/Button.vue';
-
-// eslint-disable-next-line import/no-unresolved
 import { useAppStore } from '../../store';
+import Button from '../UI/Button/Button.vue';
 
 const { setGameStatus, addPlayers, game, user: userConnected } = useAppStore();
 const { onResult } = useGetOneGameQuery({ gameId: game.gameId });
-const { result: gameSubscription } = useSubscribeGameSubscription({
-  gameId: game.gameId,
-});
 
-watch(gameSubscription, (data) => {
-  if (data) {
-    const events = data.playingGame;
-
-    for (const event of events) {
-      switch (event.__typename) {
-        case 'JoinGameEvent': {
-          const { __typename, ...payload } = event.joinEventPayload;
-          addPlayers([{ ...payload, vote: null, hasVoted: false }]);
-          break;
-        }
-        case 'GameStatusEvent': {
-          setGameStatus(event.statusEventPayload);
-          break;
-        }
-      }
-    }
-  }
-});
+const { mutate, onDone } = useChangeGameStatusMutation({});
 
 onResult(({ data }) => {
   if (data.getOneGame) {
@@ -57,8 +31,12 @@ onResult(({ data }) => {
   }
 });
 
-const handleClick = () => {
+onDone(() => {
   setGameStatus(Status.InProgress);
+});
+
+const handleClick = async () => {
+  await mutate({ gameId: game.gameId, input: { status: Status.InProgress } });
 };
 </script>
 
@@ -72,7 +50,7 @@ const handleClick = () => {
     </ul>
     <footer class="wait-users-list-footer">
       <Button
-        v-if="userConnected?.role === 'SCRUMMASTER'"
+        v-if="userConnected?.role === UserRole.Scrummaster"
         class="start-button"
         :text="gameBoardContent.start"
         @click="handleClick"
