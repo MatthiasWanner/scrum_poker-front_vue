@@ -8,17 +8,39 @@ import VoteCard from './VoteCard.vue';
 import { useAppStore } from '../../store';
 import Button from '../UI/Button/Button.vue';
 // eslint-disable-next-line import/no-unresolved
-import { useResetUsersVotesMutation } from '../../api/generated';
+import {
+  useResetUsersVotesMutation,
+  useRevealVotesQuery,
+  UserRole,
+} from '../../api/generated';
+import { storeToRefs } from 'pinia';
 
-const {
-  user: userConnected,
-  game: { gameId },
-} = useAppStore();
+const appStore = useAppStore();
+const { user: userConnected, game, isVoteSecret } = storeToRefs(appStore);
 
 const { mutate } = useResetUsersVotesMutation({});
 
-const handleClick = () => {
-  mutate({ gameId, input: { resetVotes: true } });
+const { refetch: getVotes } = useRevealVotesQuery(
+  {
+    gameId: game.value.gameId,
+  },
+  {
+    enabled: userConnected.value?.role === UserRole.Scrummaster,
+  },
+);
+
+const getButtonProps = () => {
+  if (game.value.users.every((u) => u.vote))
+    return {
+      text: gameBoardContent.newVote,
+      handleClick: () =>
+        mutate({ gameId: game.value.gameId, input: { resetVotes: true } }),
+    };
+
+  return {
+    text: 'Reveal Votes',
+    handleClick: getVotes,
+  };
 };
 </script>
 
@@ -30,14 +52,17 @@ const handleClick = () => {
         :key="index"
         :label="card.label"
         :value="card.value"
+        :is-disabled="
+          game.users.find((u) => u.userId === userConnected?.userId)?.hasVoted
+        "
       />
     </header>
     <footer class="user-cards-footer">
       <Button
-        v-if="userConnected?.role === 'SCRUMMASTER'"
-        class="again-button"
-        :text="gameBoardContent.newVote"
-        @click="handleClick"
+        v-if="userConnected?.role === UserRole.Scrummaster && !isVoteSecret"
+        class="scrum-button"
+        :text="getButtonProps().text"
+        :handle-click="getButtonProps().handleClick"
       />
     </footer>
   </section>
@@ -78,7 +103,7 @@ const handleClick = () => {
   width: 100%;
 }
 
-.again-button {
+.scrum-button {
   margin-bottom: 10px;
 }
 </style>
